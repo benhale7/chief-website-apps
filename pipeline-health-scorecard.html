@@ -1,0 +1,1499 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Health Scorecard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   PIPELINE HEALTH SCORECARD APP v1
+   Brand: Chief Green #00C29F
+   Modeled on: Sales Coaching Audit App
+   ============================================================ */
+:root {
+  --ca-primary: #00C29F;
+  --ca-primary-dark: #00a88a;
+  --ca-primary-light: #e6faf6;
+  --ca-primary-glow: rgba(0, 194, 159, 0.12);
+  --ca-green: #059669;
+  --ca-green-light: #d1fae5;
+  --ca-amber: #d97706;
+  --ca-amber-light: #fef9ee;
+  --ca-red: #dc2626;
+  --ca-red-light: #fef2f2;
+  --ca-text: #111827;
+  --ca-text-secondary: #6b7280;
+  --ca-text-light: #9ca3af;
+  --ca-bg: #ffffff;
+  --ca-surface: #f9fafb;
+  --ca-border: #e5e7eb;
+  --ca-border-light: #f3f4f6;
+  --ca-radius: 16px;
+  --ca-radius-sm: 10px;
+  --ca-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --ca-shadow-lg: 0 4px 16px rgba(0,0,0,0.08);
+  --ca-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ca-font-heading: 'Inter Tight', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+#pipeline-scorecard-app {
+  font-family: var(--ca-font);
+  color: var(--ca-text);
+  max-width: 740px;
+  margin: 56px auto;
+  padding: 0 24px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+#pipeline-scorecard-app * { box-sizing: border-box; }
+#pipeline-scorecard-app h2,
+#pipeline-scorecard-app h3,
+#pipeline-scorecard-app p,
+#pipeline-scorecard-app ul,
+#pipeline-scorecard-app li,
+#pipeline-scorecard-app div,
+#pipeline-scorecard-app button,
+#pipeline-scorecard-app span { margin: 0; padding: 0; }
+#pipeline-scorecard-app button { font-family: var(--ca-font); }
+
+/* --- Screens --- */
+#pipeline-scorecard-app .ca-screen { display: none; }
+#pipeline-scorecard-app .ca-screen.ca-active { display: block; animation: psFadeIn 0.4s ease; }
+@keyframes psFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   INTRO SCREEN
+   ======================================== */
+#pipeline-scorecard-app .ca-intro-card {
+  background: var(--ca-bg);
+  border: 1px solid var(--ca-border);
+  border-radius: var(--ca-radius);
+  padding: 80px 60px;
+  text-align: center;
+  box-shadow: var(--ca-shadow);
+}
+#pipeline-scorecard-app .ca-intro-card h2 {
+  font-family: var(--ca-font-heading);
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 28px;
+  color: var(--ca-text);
+  letter-spacing: -0.3px;
+}
+#pipeline-scorecard-app .ca-intro-subtitle {
+  font-size: 17px;
+  color: var(--ca-text-secondary);
+  margin-bottom: 48px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+  text-align: center;
+}
+#pipeline-scorecard-app .ca-intro-meta {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 52px;
+}
+#pipeline-scorecard-app .ca-intro-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+#pipeline-scorecard-app .ca-intro-meta-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+#pipeline-scorecard-app .ca-intro-meta-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ca-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+#pipeline-scorecard-app .ca-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 44px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--ca-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+}
+#pipeline-scorecard-app .ca-btn-primary {
+  background: var(--ca-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 194, 159, 0.3);
+}
+#pipeline-scorecard-app .ca-btn-primary:hover {
+  background: var(--ca-primary-dark);
+  box-shadow: 0 4px 14px rgba(0, 194, 159, 0.35);
+  transform: translateY(-1px);
+}
+#pipeline-scorecard-app .ca-btn-primary:disabled {
+  background: var(--ca-border);
+  color: var(--ca-text-light);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+#pipeline-scorecard-app .ca-btn-secondary {
+  background: var(--ca-bg);
+  color: var(--ca-text-secondary);
+  border: 1px solid var(--ca-border);
+  padding: 18px 40px;
+}
+#pipeline-scorecard-app .ca-btn-secondary:hover {
+  background: var(--ca-surface);
+  border-color: var(--ca-text-light);
+}
+#pipeline-scorecard-app .ca-btn-download {
+  background: var(--ca-primary);
+  color: #fff;
+  padding: 20px 52px;
+  font-size: 17px;
+  font-weight: 700;
+  border-radius: var(--ca-radius-sm);
+  box-shadow: 0 2px 8px rgba(0, 194, 159, 0.3);
+}
+#pipeline-scorecard-app .ca-btn-download:hover {
+  background: var(--ca-primary-dark);
+  box-shadow: 0 4px 14px rgba(0, 194, 159, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   CONTEXT SCREEN (Team Size + Segment)
+   ======================================== */
+#pipeline-scorecard-app .ca-context-card {
+  background: var(--ca-bg);
+  border: 1px solid var(--ca-border);
+  border-radius: var(--ca-radius);
+  padding: 72px 60px;
+  text-align: center;
+  box-shadow: var(--ca-shadow);
+}
+#pipeline-scorecard-app .ca-context-card h3 {
+  font-family: var(--ca-font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--ca-text);
+}
+#pipeline-scorecard-app .ca-context-desc {
+  font-size: 15px;
+  color: var(--ca-text-secondary);
+  margin-bottom: 48px;
+}
+#pipeline-scorecard-app .ca-context-group {
+  margin-bottom: 48px;
+}
+#pipeline-scorecard-app .ca-context-group-label {
+  font-family: var(--ca-font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ca-text);
+  margin-bottom: 20px;
+}
+#pipeline-scorecard-app .ca-size-options {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+#pipeline-scorecard-app .ca-size-btn {
+  padding: 22px 36px;
+  font-size: 17px;
+  font-weight: 700;
+  border: 2px solid var(--ca-border);
+  border-radius: var(--ca-radius-sm);
+  background: var(--ca-bg);
+  color: var(--ca-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 130px;
+}
+#pipeline-scorecard-app .ca-size-btn:hover {
+  border-color: var(--ca-primary);
+  background: var(--ca-primary-light);
+}
+#pipeline-scorecard-app .ca-size-btn.ca-selected {
+  border-color: var(--ca-primary);
+  background: var(--ca-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 194, 159, 0.3);
+}
+
+/* ========================================
+   PROGRESS BAR
+   ======================================== */
+#pipeline-scorecard-app .ca-progress-container { margin-bottom: 36px; }
+#pipeline-scorecard-app .ca-progress-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+#pipeline-scorecard-app .ca-progress-step {
+  flex: 1;
+  height: 6px;
+  background: var(--ca-border-light);
+  border-radius: 3px;
+  transition: background 0.4s ease;
+}
+#pipeline-scorecard-app .ca-progress-step.ca-done { background: var(--ca-primary); }
+#pipeline-scorecard-app .ca-progress-step.ca-current { background: var(--ca-primary); opacity: 0.45; }
+#pipeline-scorecard-app .ca-progress-label {
+  font-size: 14px;
+  color: var(--ca-text-secondary);
+  font-weight: 500;
+}
+
+/* ========================================
+   QUESTION CATEGORY CARD
+   ======================================== */
+#pipeline-scorecard-app .ca-category-card {
+  background: var(--ca-bg);
+  border: 1px solid var(--ca-border);
+  border-radius: var(--ca-radius);
+  padding: 56px 52px;
+  box-shadow: var(--ca-shadow);
+}
+#pipeline-scorecard-app .ca-category-name {
+  font-family: var(--ca-font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ca-text);
+  margin-bottom: 16px;
+}
+#pipeline-scorecard-app .ca-category-desc {
+  font-size: 15px;
+  color: var(--ca-text-secondary);
+  margin-bottom: 28px;
+  line-height: 1.55;
+}
+
+/* Scale legend */
+#pipeline-scorecard-app .ca-scale-legend {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--ca-surface);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ca-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   INDIVIDUAL QUESTION
+   ======================================== */
+#pipeline-scorecard-app .ca-question {
+  padding: 36px 0;
+  border-bottom: 1px solid var(--ca-border-light);
+}
+#pipeline-scorecard-app .ca-question:last-child { border-bottom: none; padding-bottom: 16px; }
+#pipeline-scorecard-app .ca-question:first-child { padding-top: 16px; }
+#pipeline-scorecard-app .ca-question-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ca-text);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+/* Rating bubbles */
+#pipeline-scorecard-app .ca-rating-group {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+}
+#pipeline-scorecard-app .ca-rating-bubble {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--ca-border);
+  background: var(--ca-bg);
+  color: var(--ca-text-secondary);
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+#pipeline-scorecard-app .ca-rating-bubble:hover {
+  border-color: var(--ca-primary);
+  background: var(--ca-primary-light);
+  color: var(--ca-primary);
+  transform: scale(1.08);
+}
+#pipeline-scorecard-app .ca-rating-bubble.ca-selected {
+  border-color: var(--ca-primary);
+  background: var(--ca-primary);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 194, 159, 0.35);
+  transform: scale(1.08);
+}
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+#pipeline-scorecard-app .ca-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 44px;
+}
+#pipeline-scorecard-app .ca-nav-right { margin-left: auto; }
+
+/* ========================================
+   RESULTS SCREEN
+   ======================================== */
+#pipeline-scorecard-app .ca-results-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+#pipeline-scorecard-app .ca-results-header h2 {
+  font-family: var(--ca-font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ca-text);
+  letter-spacing: -0.3px;
+}
+
+/* Score display */
+#pipeline-scorecard-app .ca-score-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 48px 0 60px;
+}
+#pipeline-scorecard-app .ca-score-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 7px solid;
+  margin-bottom: 32px;
+  background: var(--ca-bg);
+  box-shadow: var(--ca-shadow-lg);
+}
+#pipeline-scorecard-app .ca-score-number {
+  font-family: var(--ca-font-heading);
+  font-size: 58px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+#pipeline-scorecard-app .ca-score-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 6px;
+  opacity: 0.7;
+}
+#pipeline-scorecard-app .ca-tier-name {
+  font-family: var(--ca-font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+#pipeline-scorecard-app .ca-tier-desc {
+  font-size: 16px;
+  color: var(--ca-text-secondary);
+  max-width: 540px;
+  text-align: center;
+  line-height: 1.65;
+}
+
+/* Segment benchmark callout */
+#pipeline-scorecard-app .ca-benchmark-callout {
+  margin-top: 20px;
+  padding: 16px 24px;
+  background: var(--ca-primary-light);
+  border: 1px solid rgba(0, 194, 159, 0.2);
+  border-radius: var(--ca-radius-sm);
+  font-size: 14px;
+  color: var(--ca-text-secondary);
+  line-height: 1.6;
+  max-width: 540px;
+  text-align: center;
+}
+
+/* Tier colors */
+#pipeline-scorecard-app .ca-tier-leader .ca-score-circle { border-color: var(--ca-green); color: var(--ca-green); }
+#pipeline-scorecard-app .ca-tier-leader .ca-tier-name { color: var(--ca-green); }
+#pipeline-scorecard-app .ca-tier-developing .ca-score-circle { border-color: var(--ca-primary); color: var(--ca-primary); }
+#pipeline-scorecard-app .ca-tier-developing .ca-tier-name { color: var(--ca-primary); }
+#pipeline-scorecard-app .ca-tier-novice .ca-score-circle { border-color: var(--ca-amber); color: var(--ca-amber); }
+#pipeline-scorecard-app .ca-tier-novice .ca-tier-name { color: var(--ca-amber); }
+#pipeline-scorecard-app .ca-tier-blind .ca-score-circle { border-color: var(--ca-red); color: var(--ca-red); }
+#pipeline-scorecard-app .ca-tier-blind .ca-tier-name { color: var(--ca-red); }
+
+/* ========================================
+   CATEGORY BAR CHART
+   ======================================== */
+#pipeline-scorecard-app .ca-bars-section {
+  background: var(--ca-bg);
+  border: 1px solid var(--ca-border);
+  border-radius: var(--ca-radius);
+  padding: 52px 52px;
+  margin-bottom: 52px;
+  box-shadow: var(--ca-shadow);
+}
+#pipeline-scorecard-app .ca-bars-title {
+  font-family: var(--ca-font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 36px;
+  color: var(--ca-text);
+}
+#pipeline-scorecard-app .ca-bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+#pipeline-scorecard-app .ca-bar-row:last-child { margin-bottom: 0; }
+#pipeline-scorecard-app .ca-bar-label {
+  width: 140px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ca-text);
+  flex-shrink: 0;
+}
+#pipeline-scorecard-app .ca-bar-track {
+  flex: 1;
+  height: 14px;
+  background: var(--ca-border-light);
+  border-radius: 7px;
+  overflow: hidden;
+  margin: 0 16px;
+}
+#pipeline-scorecard-app .ca-bar-fill {
+  height: 100%;
+  border-radius: 7px;
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  min-width: 3px;
+}
+#pipeline-scorecard-app .ca-bar-score {
+  width: 44px;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: right;
+  flex-shrink: 0;
+}
+#pipeline-scorecard-app .ca-bar-green { background: var(--ca-green); }
+#pipeline-scorecard-app .ca-bar-teal { background: var(--ca-primary); }
+#pipeline-scorecard-app .ca-bar-amber { background: var(--ca-amber); }
+#pipeline-scorecard-app .ca-bar-red { background: var(--ca-red); }
+
+/* ========================================
+   FOCUS AREA CARD
+   ======================================== */
+#pipeline-scorecard-app .ca-focus-card {
+  border: 1px solid #fca5a5;
+  border-radius: var(--ca-radius);
+  padding: 52px 52px;
+  margin-bottom: 52px;
+  background: var(--ca-red-light);
+}
+#pipeline-scorecard-app .ca-focus-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-radius: 6px;
+  background: var(--ca-red);
+  color: #fff;
+  margin-bottom: 24px;
+}
+#pipeline-scorecard-app .ca-focus-card h3 {
+  font-family: var(--ca-font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--ca-text);
+}
+#pipeline-scorecard-app .ca-focus-why {
+  font-size: 15px;
+  color: var(--ca-text-secondary);
+  margin-bottom: 36px;
+  line-height: 1.7;
+}
+#pipeline-scorecard-app .ca-action-list { list-style: none; }
+#pipeline-scorecard-app .ca-action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 22px 0;
+  border-top: 1px solid rgba(220, 38, 38, 0.15);
+}
+#pipeline-scorecard-app .ca-action-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ca-red);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+#pipeline-scorecard-app .ca-action-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ca-text);
+  padding-top: 5px;
+}
+
+/* ========================================
+   DOWNLOAD + CTA
+   ======================================== */
+#pipeline-scorecard-app .ca-download-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+#pipeline-scorecard-app .ca-download-row + .ca-download-row {
+  margin-top: 12px;
+}
+#pipeline-scorecard-app .ca-cta-section {
+  text-align: center;
+  padding: 52px 48px;
+  margin-top: 44px;
+  background: var(--ca-surface);
+  border-radius: var(--ca-radius);
+  border: 1px solid var(--ca-border);
+}
+#pipeline-scorecard-app .ca-cta-text {
+  font-size: 15px;
+  color: var(--ca-text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.55;
+}
+#pipeline-scorecard-app .ca-cta-link {
+  color: var(--ca-primary-dark);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+#pipeline-scorecard-app .ca-cta-link:hover { color: var(--ca-primary); text-decoration: underline; }
+
+/* PDF error message */
+#pipeline-scorecard-app .ca-pdf-error {
+  display: none;
+  text-align: center;
+  padding: 20px 24px;
+  margin: 16px 0;
+  background: var(--ca-red-light);
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--ca-red);
+  line-height: 1.5;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 640px) {
+  #pipeline-scorecard-app { margin: 32px auto; padding: 0 16px; }
+  #pipeline-scorecard-app .ca-intro-card { padding: 48px 28px; }
+  #pipeline-scorecard-app .ca-intro-card h2 { font-size: 24px; }
+  #pipeline-scorecard-app .ca-context-card { padding: 48px 28px; }
+  #pipeline-scorecard-app .ca-category-card { padding: 40px 28px; }
+  #pipeline-scorecard-app .ca-rating-bubble { width: 44px; height: 44px; font-size: 14px; }
+  #pipeline-scorecard-app .ca-rating-group { gap: 8px; }
+  #pipeline-scorecard-app .ca-bar-label { width: 110px; font-size: 13px; }
+  #pipeline-scorecard-app .ca-size-options { gap: 12px; }
+  #pipeline-scorecard-app .ca-size-btn { min-width: 100px; padding: 18px 24px; font-size: 15px; }
+  #pipeline-scorecard-app .ca-intro-meta { gap: 24px; }
+  #pipeline-scorecard-app .ca-focus-card { padding: 36px 28px; }
+  #pipeline-scorecard-app .ca-bars-section { padding: 36px 28px; }
+  #pipeline-scorecard-app .ca-score-circle { width: 150px; height: 150px; }
+  #pipeline-scorecard-app .ca-score-number { font-size: 48px; }
+  #pipeline-scorecard-app .ca-btn { padding: 16px 36px; }
+  #pipeline-scorecard-app .ca-btn-download { padding: 18px 40px; }
+  #pipeline-scorecard-app .ca-cta-section { padding: 40px 28px; }
+}
+</style>
+</head>
+<body>
+
+<div id="pipeline-scorecard-app">
+
+  <!-- ===== INTRO ===== -->
+  <div id="ps-intro" class="ca-screen ca-active">
+    <div class="ca-intro-card">
+      <h2 id="pipeline-scorecard">The Pipeline Health Scorecard</h2>
+      <p class="ca-intro-subtitle">Answer 25 questions across 5 areas of pipeline health. Get your score, your primary failure mode, and a specific action plan for your next pipeline review.</p>
+      <div class="ca-intro-meta">
+        <div class="ca-intro-meta-item">
+          <span class="ca-intro-meta-icon">&#9201;</span>
+          <span class="ca-intro-meta-label">5 minutes</span>
+        </div>
+        <div class="ca-intro-meta-item">
+          <span class="ca-intro-meta-icon">&#128221;</span>
+          <span class="ca-intro-meta-label">25 questions</span>
+        </div>
+        <div class="ca-intro-meta-item">
+          <span class="ca-intro-meta-icon">&#128274;</span>
+          <span class="ca-intro-meta-label">Anonymous</span>
+        </div>
+      </div>
+      <button class="ca-btn ca-btn-primary" onclick="psApp.showContext()">Start Scorecard &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ===== CONTEXT ===== -->
+  <div id="ps-context" class="ca-screen">
+    <div class="ca-context-card">
+      <h3>Tell Us About Your Team</h3>
+      <p class="ca-context-desc">This helps us personalize your benchmarks and recommendations.</p>
+
+      <div class="ca-context-group">
+        <div class="ca-context-group-label">How many reps do you manage?</div>
+        <div class="ca-size-options" id="ps-team-options">
+          <button class="ca-size-btn" onclick="psApp.selectTeamSize('1-5', this)">1 &ndash; 5</button>
+          <button class="ca-size-btn" onclick="psApp.selectTeamSize('6-10', this)">6 &ndash; 10</button>
+          <button class="ca-size-btn" onclick="psApp.selectTeamSize('11-15', this)">11 &ndash; 15</button>
+          <button class="ca-size-btn" onclick="psApp.selectTeamSize('16+', this)">16+</button>
+        </div>
+      </div>
+
+      <div class="ca-context-group">
+        <div class="ca-context-group-label">What&#8217;s your primary sales segment?</div>
+        <div class="ca-size-options" id="ps-segment-options">
+          <button class="ca-size-btn" onclick="psApp.selectSegment('SMB', this)">SMB</button>
+          <button class="ca-size-btn" onclick="psApp.selectSegment('Mid-Market', this)">Mid-Market</button>
+          <button class="ca-size-btn" onclick="psApp.selectSegment('Enterprise', this)">Enterprise</button>
+          <button class="ca-size-btn" onclick="psApp.selectSegment('Mixed', this)">Mixed</button>
+        </div>
+      </div>
+
+      <button class="ca-btn ca-btn-primary" id="ps-context-next" disabled onclick="psApp.startQuestions()">Continue &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ===== QUESTIONS ===== -->
+  <div id="ps-questions" class="ca-screen">
+    <div class="ca-progress-container">
+      <div class="ca-progress-steps" id="ps-progress-steps"></div>
+      <div class="ca-progress-label" id="ps-progress-label"></div>
+    </div>
+    <div class="ca-category-card">
+      <div class="ca-category-name" id="ps-cat-name"></div>
+      <div class="ca-category-desc" id="ps-cat-desc"></div>
+      <div class="ca-scale-legend">
+        <span>1 &mdash; Strongly Disagree</span>
+        <span>5 &mdash; Strongly Agree</span>
+      </div>
+      <div id="ps-questions-list"></div>
+    </div>
+    <div class="ca-nav">
+      <button class="ca-btn ca-btn-secondary" id="ps-prev-btn" onclick="psApp.prevCategory()">&larr; Back</button>
+      <div class="ca-nav-right">
+        <button class="ca-btn ca-btn-primary" id="ps-next-btn" disabled onclick="psApp.nextCategory()">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div id="ps-results" class="ca-screen">
+    <div class="ca-results-header">
+      <h2>Your Pipeline Health Results</h2>
+    </div>
+    <div class="ca-score-display" id="ps-score-display">
+      <div class="ca-score-circle">
+        <div class="ca-score-number" id="ps-score-number">0</div>
+        <div class="ca-score-label">out of 100</div>
+      </div>
+      <div class="ca-tier-name" id="ps-tier-name"></div>
+      <div class="ca-tier-desc" id="ps-tier-desc"></div>
+      <div class="ca-benchmark-callout" id="ps-benchmark-callout" style="display:none;"></div>
+    </div>
+
+    <div class="ca-bars-section">
+      <div class="ca-bars-title">Score by Category</div>
+      <div id="ps-bars-container"></div>
+    </div>
+
+    <div class="ca-focus-card" id="ps-focus-card">
+      <div class="ca-focus-badge">Primary Failure Mode</div>
+      <h3 id="ps-focus-name"></h3>
+      <div class="ca-focus-why" id="ps-focus-why"></div>
+      <ul class="ca-action-list" id="ps-action-list"></ul>
+    </div>
+
+    <div class="ca-pdf-error" id="ps-pdf-error"></div>
+
+    <div class="ca-download-row">
+      <button class="ca-btn ca-btn-download" id="ps-download-btn" onclick="psApp.downloadPDF()">&#128196; Download Your Report (PDF)</button>
+    </div>
+    <div class="ca-download-row">
+      <button class="ca-btn ca-btn-secondary" onclick="psApp.restart()">&#8635; Retake Scorecard</button>
+    </div>
+
+    <div class="ca-cta-section">
+      <p class="ca-cta-text">Want to surface pipeline risk automatically, in real time?</p>
+      <a class="ca-cta-link" href="https://www.getchief.com/schedule-a-demo" target="_blank">Schedule a Demo with Chief &rarr;</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   PIPELINE HEALTH SCORECARD APP v1 — Logic + Robust PDF
+   ============================================================ */
+var psApp = (function() {
+
+  // ── CONFIG ──
+  var CATEGORIES = [
+    {
+      id: 'coverage', name: 'Pipeline Coverage',
+      desc: 'Coverage failure is the most upstream pipeline problem. It means there isn\u2019t enough qualified opportunity to hit the number even if everything closes. These questions assess whether you have enough pipeline \u2014 and whether your coverage number reflects reality.',
+      questions: [
+        'My pipeline coverage ratio consistently meets or exceeds the benchmark for my segment.',
+        'I track real coverage separately from reported coverage (excluding stale deals, missing fields, and past-due close dates).',
+        'My team has a consistent system for building pipeline for future quarters \u2014 not just the current one.',
+        'The MQL-to-SQL handoff between marketing and sales is well-defined and producing qualified opportunities at a predictable rate.',
+        'When I look at my early-stage pipeline, I\u2019m confident we have enough to hit target three to four months from now.'
+      ]
+    },
+    {
+      id: 'quality', name: 'Pipeline Quality',
+      desc: 'Quality failure means the pipeline is full of the wrong deals \u2014 unqualified opportunities, zombie deals that haven\u2019t moved, and misfit ICPs that will never buy. These questions assess whether the deals in your pipeline are real.',
+      questions: [
+        'My team uses a defined qualification framework (BANT, MEDDIC, SPICED, or similar) with consistent stage-gate criteria.',
+        'Deals can only advance to the next stage when specific qualification criteria are documented \u2014 not just assumed.',
+        'I have a formal process for identifying and closing out zombie deals (no stakeholder contact in 45\u201360 days).',
+        'My win rates have been stable or improving over the past two to three quarters.',
+        'I\u2019m confident that the late-stage deals in my pipeline have a confirmed economic buyer, a real budget, and a documented next step.'
+      ]
+    },
+    {
+      id: 'velocity', name: 'Pipeline Velocity',
+      desc: 'Velocity failure means the right deals are in the pipeline but they\u2019re not moving. Deals stall at specific stages, sales cycles lengthen, and close dates slip quarter over quarter. These questions assess how efficiently your pipeline converts to revenue.',
+      questions: [
+        'I track pipeline velocity (the formula: Deals \u00d7 Avg Deal Value \u00d7 Win Rate \u00f7 Cycle Length) and monitor it quarterly.',
+        'I know which pipeline stage has the highest average time-in-stage for my team, and I have a plan to address it.',
+        'My reps consistently multi-thread deals \u2014 building relationships with multiple stakeholders rather than relying on a single champion.',
+        'Deal close dates in my pipeline are based on specific customer events or milestones, not end-of-quarter defaults.',
+        'My average sales cycle length has stayed the same or shortened over the past two to three quarters.'
+      ]
+    },
+    {
+      id: 'visibility', name: 'Pipeline Visibility',
+      desc: 'Visibility failure means you can\u2019t trust what you see. CRM data is incomplete, stale, or optimistic. Stage assignments don\u2019t reflect reality. Forecasts are built on gut feel. When visibility fails, every other failure mode gets harder to diagnose and fix.',
+      questions: [
+        'At least 80% of open opportunities in my CRM have a documented next step with a specific date and owner.',
+        'I can identify the economic buyer by name for every deal in my late-stage pipeline.',
+        'My CRM fields are consistently completed \u2014 I don\u2019t routinely discover missing data during pipeline reviews.',
+        'My forecast variance is consistently below 10% (forecasted revenue vs. actual closed revenue).',
+        'I trust the data in my CRM enough to make coaching and resource allocation decisions based on it.'
+      ]
+    },
+    {
+      id: 'review', name: 'Review Process',
+      desc: 'Even a well-designed pipeline system decays without a consistent review cadence. These questions assess whether your process turns data into decisions \u2014 and whether your reviews are actually improving pipeline health over time.',
+      questions: [
+        'My weekly pipeline reviews are exception-based (focused on at-risk deals) rather than a deal-by-deal status walkthrough.',
+        'Every late-stage deal reviewed in my pipeline call can answer: who is the economic buyer, what is the next agreed step, and what is the biggest risk to closing.',
+        'My pipeline reviews consistently produce specific decisions or actions \u2014 not just status updates.',
+        'I review the 9 pipeline health metrics (coverage ratio, velocity, forecast variance, win rate by stage, etc.) at least monthly.',
+        'I do a full pipeline audit at the start of each quarter \u2014 including a dead deal purge, field completeness check, and coverage modeling for the upcoming period.'
+      ]
+    }
+  ];
+
+  var TIERS = [
+    { min: 80, id: 'leader', name: 'Pipeline Leader', css: 'ca-tier-leader',
+      desc: 'Your pipeline health system is working. You have reliable coverage, a clean pipeline, moving deals, and data you trust. Focus on continuous refinement \u2014 and use the playbook to share this framework with other managers.' },
+    { min: 60, id: 'developing', name: 'Developing Pipeline', css: 'ca-tier-developing',
+      desc: 'You have solid pipeline habits but meaningful gaps in at least one area. Targeted improvements in your focus area will have outsized impact on forecast accuracy and quarterly attainment.' },
+    { min: 40, id: 'novice', name: 'Pipeline Novice', css: 'ca-tier-novice',
+      desc: 'Your pipeline health is inconsistent \u2014 likely reactive rather than systematic. You\u2019re probably feeling this in your forecast variance and close-rate unpredictability. The playbook and this action plan are your starting point.' },
+    { min: 0, id: 'blind', name: 'Flying Blind', css: 'ca-tier-blind',
+      desc: 'You\u2019re managing a pipeline you can\u2019t fully see or trust. Forecasts are guesses. Zombie deals are distorting your view. The good news: fixing visibility first unlocks everything else. Start with Section 4 of the playbook.' }
+  ];
+
+  // Segment-specific benchmarks
+  var SEGMENT_BENCHMARKS = {
+    'SMB': {
+      coverage: { benchmark: '2x\u20133x', atRisk: 'below 2x' },
+      velocity: { cycleLength: '30\u201360 days', winRate: '25\u201335%' }
+    },
+    'Mid-Market': {
+      coverage: { benchmark: '3x\u20134x', atRisk: 'below 2.5x' },
+      velocity: { cycleLength: '60\u201390 days', winRate: '20\u201325%' }
+    },
+    'Enterprise': {
+      coverage: { benchmark: '4x\u20135x', atRisk: 'below 3x' },
+      velocity: { cycleLength: '90\u2013180 days', winRate: '15\u201320%' }
+    },
+    'Mixed': {
+      coverage: { benchmark: '3x\u20134x', atRisk: 'below 2.5x' },
+      velocity: { cycleLength: '67\u201384 days', winRate: '20\u201325%' }
+    }
+  };
+
+  var FOCUS = {
+    coverage: {
+      why: 'Without enough qualified pipeline, nothing downstream matters. Even a perfectly managed, well-qualified, fast-moving pipeline misses the number if there isn\u2019t enough of it. Coverage is the most upstream failure mode \u2014 it can\u2019t be fixed by coaching reps to close harder.',
+      actions: [
+        'Calculate your real coverage ratio this week. Exclude deals with no activity in 45+ days, missing qualification fields, and past-due close dates that haven\u2019t been updated. Compare real coverage to reported coverage \u2014 the gap is where the problem lives.',
+        'Audit your MQL-to-SQL handoff. Map the conversion rate from marketing-qualified lead to sales-qualified opportunity. If it\u2019s below 15%, the handoff definition is broken \u2014 marketing and sales aren\u2019t aligned on what \u201cqualified\u201d means.',
+        'Implement a balanced pipeline cadence: alternate between forecast weeks (focused on closing current-quarter pipeline) and pipeline-generation weeks (focused on building coverage for Q+1 and Q+2). Make it a team norm, not a rep-by-rep choice.'
+      ]
+    },
+    quality: {
+      why: 'A pipeline full of unqualified deals doesn\u2019t just hurt win rates \u2014 it burns rep time, distorts your forecast, and creates a false sense of coverage that collapses in the last three weeks of the quarter. The fix requires making disqualification a process, not a judgment call.',
+      actions: [
+        'Run a zombie deal audit this week. Flag every open opportunity with no stakeholder contact in 45+ days (or 60+ days for enterprise). For each: either schedule a specific re-engagement action with a deadline, or move it to Closed Lost. No middle ground.',
+        'Define stage gate criteria for your next pipeline review. For each stage, write down what must be documented before a deal can advance \u2014 not what you hope is true, but what must actually be confirmed. Economic buyer name, budget confirmation, and next step with a date are the minimum at late stage.',
+        'Pick one qualification framework (BANT for SMB/transactional, MEDDIC for enterprise, SPICED for relationship-led SaaS) and make it the common language of your next pipeline call. Every deal should be discussable through that lens.'
+      ]
+    },
+    velocity: {
+      why: 'Stalled deals are pipeline debt. They consume forecast space, rep time, and management attention without producing revenue. Velocity failure usually shows up as one specific stage where deals accumulate \u2014 and the root cause is almost always the same: the rep doesn\u2019t have access to the economic buyer.',
+      actions: [
+        'Run the velocity formula on your current pipeline: (Number of Deals \u00d7 Average Deal Value \u00d7 Win Rate) \u00f7 Average Sales Cycle Length = Daily Pipeline Velocity. Compare to last quarter. If velocity dropped, identify which variable moved: win rate, cycle length, deal size, or volume.',
+        'Identify your highest average-time-in-stage. Pull every deal currently sitting at that stage and ask the same diagnostic question for each: what is supposed to happen at this stage that hasn\u2019t happened yet? The answer will almost always be: the rep doesn\u2019t have the economic buyer.',
+        'Add a multi-threading check to your next pipeline review. For every deal over $25,000 in your forecast, ask: how many stakeholders have been meaningfully engaged in the last 30 days? Any deal with a single contact is a single-point-of-failure risk. Commit to a specific plan for broadening engagement before the next call.'
+      ]
+    },
+    visibility: {
+      why: 'You can\u2019t fix what you can\u2019t see. Visibility failure makes every other failure mode worse \u2014 because you can\u2019t diagnose coverage problems, quality issues, or velocity bottlenecks if the underlying data isn\u2019t trustworthy. And visibility failure is self-reinforcing: bad data leads to bad decisions, which erodes rep trust in the system, which leads to worse data.',
+      actions: [
+        'Audit five mandatory fields this week across your late-stage pipeline: Next Step (specific action + date + owner), Close Date (based on a real customer event, not a default), Deal Stage (matches documented criteria), Economic Buyer (named person, not TBD), and Last Activity Date. Any deal missing two or more of these fields is unreliable for forecasting.',
+        'Make one field a stage gate requirement. Pick the field that\u2019s most consistently missing \u2014 usually economic buyer or next step \u2014 and enforce it as a prerequisite for stage advancement starting with your next pipeline review. Build it into the process rather than bolting it on as an inspection step.',
+        'Evaluate one automation tool that reduces manual data entry for your team. Conversation intelligence tools (Gong, Chorus.ai) auto-log calls and extract deal data. Activity capture tools auto-log emails and meetings. The goal isn\u2019t surveillance \u2014 it\u2019s reducing the manual entry burden that causes inconsistency in the first place.'
+      ]
+    },
+    review: {
+      why: 'A pipeline review that produces status updates instead of decisions is a pipeline review that\u2019s not working. Inconsistent reviews mean problems are discovered late \u2014 in week ten of a twelve-week quarter, when it\u2019s too late to do anything about them. A good review cadence is the operating system that keeps everything else working.',
+      actions: [
+        'Restructure your next pipeline review to be exception-based. Instead of reviewing every deal, use your CRM to flag the three to five deals that need a decision this week: late-stage deals with no activity, close dates approaching without confirmed next steps, or deals where the economic buyer hasn\u2019t been engaged in two weeks. Review those only. Hard limit: 30 minutes.',
+        'Implement the five-question test for every late-stage deal: (1) Who is the economic buyer and have you spoken to them in the last two weeks? (2) What is the next agreed step and when does it happen? (3) Is the close date based on a specific customer event or a default? (4) What is the biggest risk to closing as forecasted? (5) What do you need from me to advance it? Any deal that can\u2019t answer all five gets an action plan, not a place on the forecast.',
+        'Schedule a full quarterly pipeline audit before next quarter begins. Block two hours. Agenda: field completeness check across all open opportunities, dead deal purge (close any deal meeting your no-contact threshold), ICP drift check (are the deals in your pipeline actually from your target profile?), and coverage modeling for the upcoming quarter.'
+      ]
+    }
+  };
+
+  // ── STATE ──
+  var teamSize = null;
+  var segment = null;
+  var currentCat = 0;
+  var answers = {};
+  var jsPDFReady = false;
+  var jsPDFLoading = false;
+
+  // ── CHIEF LOGO (base64 JPEG) ──
+  var CHIEF_LOGO = 'data:image/jpeg;base64,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';
+
+
+  // ── jsPDF LOADER — 3 CDN fallbacks ──
+  var CDN_URLS = [
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+    'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+    'https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js'
+  ];
+
+  function loadJsPDF(cb) {
+    if (window.jspdf && window.jspdf.jsPDF) { jsPDFReady = true; if (cb) cb(true); return; }
+    if (jsPDFLoading) return;
+    jsPDFLoading = true;
+
+    var idx = 0;
+    function tryNext() {
+      if (idx >= CDN_URLS.length) {
+        jsPDFLoading = false;
+        jsPDFReady = false;
+        if (cb) cb(false);
+        return;
+      }
+      var s = document.createElement('script');
+      s.src = CDN_URLS[idx];
+      s.onload = function() {
+        if (window.jspdf && window.jspdf.jsPDF) {
+          jsPDFReady = true;
+          jsPDFLoading = false;
+          if (cb) cb(true);
+        } else {
+          idx++;
+          tryNext();
+        }
+      };
+      s.onerror = function() {
+        idx++;
+        tryNext();
+      };
+      document.head.appendChild(s);
+    }
+    tryNext();
+  }
+
+  // Start loading immediately
+  loadJsPDF();
+
+  // ── NAVIGATION ──
+  function showScreen(id) {
+    var screens = document.querySelectorAll('#pipeline-scorecard-app .ca-screen');
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove('ca-active');
+    document.getElementById(id).classList.add('ca-active');
+    document.getElementById('pipeline-scorecard-app').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showContext() { showScreen('ps-context'); }
+
+  function selectTeamSize(size, btn) {
+    teamSize = size;
+    var btns = document.querySelectorAll('#ps-team-options .ca-size-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('ca-selected');
+    btn.classList.add('ca-selected');
+    updateContextNext();
+  }
+
+  function selectSegment(seg, btn) {
+    segment = seg;
+    var btns = document.querySelectorAll('#ps-segment-options .ca-size-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('ca-selected');
+    btn.classList.add('ca-selected');
+    updateContextNext();
+  }
+
+  function updateContextNext() {
+    document.getElementById('ps-context-next').disabled = !(teamSize && segment);
+  }
+
+  function startQuestions() {
+    currentCat = 0;
+    renderCategory();
+    showScreen('ps-questions');
+  }
+
+  // ── QUESTION RENDERING ──
+  function renderCategory() {
+    var cat = CATEGORIES[currentCat];
+
+    // Progress
+    var stepsHtml = '';
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      var cls = 'ca-progress-step';
+      if (i < currentCat) cls += ' ca-done';
+      else if (i === currentCat) cls += ' ca-current';
+      stepsHtml += '<div class="' + cls + '"></div>';
+    }
+    document.getElementById('ps-progress-steps').innerHTML = stepsHtml;
+    document.getElementById('ps-progress-label').textContent =
+      'Category ' + (currentCat + 1) + ' of ' + CATEGORIES.length + ': ' + cat.name;
+
+    document.getElementById('ps-cat-name').textContent = cat.name;
+    document.getElementById('ps-cat-desc').textContent = cat.desc;
+
+    // Questions with bubble rating
+    var qHtml = '';
+    for (var qi = 0; qi < cat.questions.length; qi++) {
+      var key = cat.id + '_' + qi;
+      qHtml += '<div class="ca-question">';
+      qHtml += '<div class="ca-question-text">' + cat.questions[qi] + '</div>';
+      qHtml += '<div class="ca-rating-group">';
+      for (var v = 1; v <= 5; v++) {
+        var sel = answers[key] === v ? ' ca-selected' : '';
+        qHtml += '<button class="ca-rating-bubble' + sel + '" data-key="' + key + '" data-val="' + v + '" onclick="psApp.rate(this)">' + v + '</button>';
+      }
+      qHtml += '</div></div>';
+    }
+    document.getElementById('ps-questions-list').innerHTML = qHtml;
+
+    // Nav
+    document.getElementById('ps-prev-btn').style.display = currentCat === 0 ? 'none' : '';
+    updateNextBtn();
+    document.getElementById('ps-next-btn').textContent =
+      currentCat === CATEGORIES.length - 1 ? 'See Results \u2192' : 'Next \u2192';
+  }
+
+  function rate(btn) {
+    var key = btn.getAttribute('data-key');
+    var val = parseInt(btn.getAttribute('data-val'));
+    answers[key] = val;
+    var siblings = btn.parentElement.querySelectorAll('.ca-rating-bubble');
+    for (var i = 0; i < siblings.length; i++) siblings[i].classList.remove('ca-selected');
+    btn.classList.add('ca-selected');
+    updateNextBtn();
+  }
+
+  function updateNextBtn() {
+    var cat = CATEGORIES[currentCat];
+    var ok = true;
+    for (var i = 0; i < cat.questions.length; i++) {
+      if (!answers[cat.id + '_' + i]) { ok = false; break; }
+    }
+    document.getElementById('ps-next-btn').disabled = !ok;
+  }
+
+  function nextCategory() {
+    if (currentCat < CATEGORIES.length - 1) {
+      currentCat++;
+      renderCategory();
+      document.getElementById('pipeline-scorecard-app').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      showResults();
+    }
+  }
+
+  function prevCategory() {
+    if (currentCat > 0) { currentCat--; renderCategory(); }
+    else { showScreen('ps-context'); }
+  }
+
+  // ── SCORING ──
+  function computeScores() {
+    var catScores = {};
+    var totalSum = 0, totalMax = 0;
+    for (var ci = 0; ci < CATEGORIES.length; ci++) {
+      var cat = CATEGORIES[ci];
+      var sum = 0, max = cat.questions.length * 5;
+      for (var qi = 0; qi < cat.questions.length; qi++) sum += (answers[cat.id + '_' + qi] || 0);
+      catScores[cat.id] = Math.round((sum / max) * 100);
+      totalSum += sum;
+      totalMax += max;
+    }
+    var overall = Math.round((totalSum / totalMax) * 100);
+    var tier = TIERS[TIERS.length - 1];
+    for (var ti = 0; ti < TIERS.length; ti++) { if (overall >= TIERS[ti].min) { tier = TIERS[ti]; break; } }
+
+    // Focus area: lowest score with tiebreaker order Visibility > Coverage > Quality > Velocity > Review
+    var tieOrder = ['visibility', 'coverage', 'quality', 'velocity', 'review'];
+    var focusId = CATEGORIES[0].id, focusScore = catScores[CATEGORIES[0].id];
+    for (var fi = 0; fi < CATEGORIES.length; fi++) {
+      if (catScores[CATEGORIES[fi].id] < focusScore) {
+        focusScore = catScores[CATEGORIES[fi].id];
+        focusId = CATEGORIES[fi].id;
+      }
+    }
+    // Tie-break
+    var tied = [];
+    for (var ti2 = 0; ti2 < CATEGORIES.length; ti2++) {
+      if (catScores[CATEGORIES[ti2].id] === focusScore) tied.push(CATEGORIES[ti2].id);
+    }
+    if (tied.length > 1) {
+      for (var bi = 0; bi < tieOrder.length; bi++) {
+        if (tied.indexOf(tieOrder[bi]) >= 0) { focusId = tieOrder[bi]; break; }
+      }
+    }
+    return { catScores: catScores, overall: overall, tier: tier, focusId: focusId, focusScore: focusScore };
+  }
+
+  function barColorClass(s) { return s >= 80 ? 'ca-bar-green' : s >= 60 ? 'ca-bar-teal' : s >= 40 ? 'ca-bar-amber' : 'ca-bar-red'; }
+  function barColorHex(s) { return s >= 80 ? [5,150,105] : s >= 60 ? [0,194,159] : s >= 40 ? [217,119,6] : [220,38,38]; }
+
+  // ── SEGMENT BENCHMARK TEXT ──
+  function getBenchmarkCallout() {
+    var seg = segment || 'Mixed';
+    var bm = SEGMENT_BENCHMARKS[seg];
+    var coverageText = 'For your ' + seg.toLowerCase() + ' segment, the standard coverage benchmark is ' + bm.coverage.benchmark + '. Teams falling ' + bm.coverage.atRisk + ' are at risk of structural pipeline shortfall.';
+    var velocityText = 'For ' + seg.toLowerCase() + ' deals, average cycle length runs ' + bm.velocity.cycleLength + ' with a typical win rate of ' + bm.velocity.winRate + '.';
+    return coverageText + ' ' + velocityText;
+  }
+
+  // ── RESULTS ──
+  function showResults() {
+    var r = computeScores();
+    showScreen('ps-results');
+
+    var display = document.getElementById('ps-score-display');
+    display.className = 'ca-score-display ' + r.tier.css;
+    document.getElementById('ps-tier-name').textContent = r.tier.name;
+    document.getElementById('ps-tier-desc').textContent = r.tier.desc;
+    animateNumber('ps-score-number', r.overall, 1200);
+
+    // Segment benchmark callout
+    var calloutEl = document.getElementById('ps-benchmark-callout');
+    calloutEl.textContent = getBenchmarkCallout();
+    calloutEl.style.display = 'block';
+
+    var barsHtml = '';
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      var cat = CATEGORIES[i], s = r.catScores[cat.id];
+      barsHtml += '<div class="ca-bar-row">' +
+        '<div class="ca-bar-label">' + cat.name + '</div>' +
+        '<div class="ca-bar-track"><div class="ca-bar-fill ' + barColorClass(s) + '" style="width:0%" data-target="' + s + '"></div></div>' +
+        '<div class="ca-bar-score" style="color:' + rgbStr(barColorHex(s)) + '">' + s + '</div></div>';
+    }
+    document.getElementById('ps-bars-container').innerHTML = barsHtml;
+    setTimeout(function() {
+      var fills = document.querySelectorAll('#pipeline-scorecard-app .ca-bar-fill');
+      for (var f = 0; f < fills.length; f++) fills[f].style.width = fills[f].dataset.target + '%';
+    }, 120);
+
+    var focusCat = null;
+    for (var fc = 0; fc < CATEGORIES.length; fc++) { if (CATEGORIES[fc].id === r.focusId) focusCat = CATEGORIES[fc]; }
+    var fd = FOCUS[r.focusId];
+    document.getElementById('ps-focus-name').textContent = focusCat.name + ' (Score: ' + r.focusScore + '/100)';
+    document.getElementById('ps-focus-why').textContent = fd.why;
+
+    var actHtml = '';
+    for (var ai = 0; ai < fd.actions.length; ai++) {
+      actHtml += '<li class="ca-action-item"><div class="ca-action-num">' + (ai+1) + '</div><div class="ca-action-text">' + fd.actions[ai] + '</div></li>';
+    }
+    document.getElementById('ps-action-list').innerHTML = actHtml;
+    document.getElementById('ps-pdf-error').style.display = 'none';
+  }
+
+  function rgbStr(c) { return 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'; }
+
+  function animateNumber(id, target, dur) {
+    var el = document.getElementById(id);
+    var start = performance.now();
+    function step(now) {
+      var p = Math.min((now - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── PDF GENERATION ──
+  function downloadPDF() {
+    var btn = document.getElementById('ps-download-btn');
+    var errEl = document.getElementById('ps-pdf-error');
+
+    if (jsPDFReady && window.jspdf && window.jspdf.jsPDF) {
+      generatePDF();
+      return;
+    }
+
+    btn.textContent = 'Loading PDF library...';
+    btn.disabled = true;
+    errEl.style.display = 'none';
+    jsPDFLoading = false;
+
+    loadJsPDF(function(success) {
+      if (success) {
+        btn.textContent = '\uD83D\uDCC4 Download Your Report (PDF)';
+        btn.disabled = false;
+        errEl.style.display = 'none';
+        generatePDF();
+      } else {
+        btn.textContent = '\uD83D\uDCC4 Download Your Report (PDF)';
+        btn.disabled = false;
+        errEl.innerHTML = 'PDF generation requires an internet connection. This will work automatically when the scorecard is embedded on your Webflow site. To test locally, open this file directly in your browser (not via a preview server).';
+        errEl.style.display = 'block';
+      }
+    });
+  }
+
+  function generatePDF() {
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF('p', 'mm', 'a4');
+    var r = computeScores();
+    var focusCat = null;
+    for (var fc = 0; fc < CATEGORIES.length; fc++) { if (CATEGORIES[fc].id === r.focusId) focusCat = CATEGORIES[fc]; }
+    var fd = FOCUS[r.focusId];
+    var W = 210, M = 22, CW = W - M * 2;
+
+    var dark = [17, 24, 39];
+    var gray = [107, 114, 128];
+    var chief = [0, 194, 159];
+
+    function tc(s) { return s >= 80 ? [5,150,105] : s >= 60 ? [0,194,159] : s >= 40 ? [217,119,6] : [220,38,38]; }
+
+    // ── PAGE 1 ──
+    // Header bar
+    doc.setFillColor(0, 194, 159);
+    doc.rect(0, 0, W, 4, 'F');
+
+    // Chief logo
+    try { doc.addImage(CHIEF_LOGO, 'JPEG', M, 8, 40, 14); } catch(e) {}
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(24);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('Pipeline Health Scorecard Report', M, 36);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor.apply(doc, gray);
+    var today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    doc.text('Generated ' + today + '   |   Team size: ' + (teamSize || 'N/A') + '   |   Segment: ' + (segment || 'N/A'), M, 46);
+
+    doc.setDrawColor(229, 231, 235);
+    doc.setLineWidth(0.5);
+    doc.line(M, 52, W - M, 52);
+
+    // Score section
+    var y = 64;
+    var col = tc(r.overall);
+    var cx = M + 24, cy = y + 16;
+
+    doc.setDrawColor.apply(doc, col);
+    doc.setLineWidth(2.5);
+    doc.circle(cx, cy, 17);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    doc.setTextColor.apply(doc, col);
+    doc.text(String(r.overall), cx, cy + 2, { align: 'center' });
+
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('out of 100', cx, cy + 8, { align: 'center' });
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.setTextColor.apply(doc, col);
+    doc.text(r.tier.name, M + 50, y + 10);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor.apply(doc, gray);
+    var tl = doc.splitTextToSize(r.tier.desc, CW - 52);
+    doc.text(tl, M + 50, y + 18);
+
+    // Segment benchmark callout
+    y = 108;
+    var bmText = getBenchmarkCallout();
+    doc.setFillColor(230, 250, 246);
+    var bmLines = doc.splitTextToSize(bmText, CW - 16);
+    var bmH = bmLines.length * 5 + 10;
+    doc.roundedRect(M, y, CW, bmH, 3, 3, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor.apply(doc, gray);
+    doc.text(bmLines, M + 8, y + 7);
+
+    // Category bars
+    y = y + bmH + 14;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('Score by Category', M, y);
+    y += 14;
+
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      var cat = CATEGORIES[i], s = r.catScores[cat.id], bc = tc(s);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor.apply(doc, dark);
+      doc.text(cat.name, M, y + 5);
+
+      var bx = M + 46, bw = CW - 62, bh = 7;
+      doc.setFillColor(243, 244, 246);
+      doc.roundedRect(bx, y, bw, bh, 3.5, 3.5, 'F');
+
+      var fw = Math.max((s / 100) * bw, 2);
+      doc.setFillColor.apply(doc, bc);
+      doc.roundedRect(bx, y, fw, bh, 3.5, 3.5, 'F');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor.apply(doc, bc);
+      doc.text(String(s), W - M, y + 5.5, { align: 'right' });
+
+      y += 18;
+    }
+
+    // ── PAGE 2: FOCUS AREA ──
+    doc.addPage();
+    doc.setFillColor(0, 194, 159);
+    doc.rect(0, 0, W, 4, 'F');
+
+    // Chief logo on page 2
+    try { doc.addImage(CHIEF_LOGO, 'JPEG', M, 8, 40, 14); } catch(e) {}
+
+    y = 30;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(220, 38, 38);
+    doc.text('PRIMARY FAILURE MODE', M, y);
+    y += 12;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.setTextColor.apply(doc, dark);
+    doc.text(focusCat.name, M, y);
+    y += 9;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor.apply(doc, gray);
+    doc.text('Your score: ' + r.focusScore + ' / 100', M, y);
+    y += 12;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('Why This Matters', M, y);
+    y += 7;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor.apply(doc, gray);
+    var wl = doc.splitTextToSize(fd.why, CW);
+    doc.text(wl, M, y);
+    y += wl.length * 4.5 + 10;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('3 Actions to Take This Week', M, y);
+    y += 10;
+
+    for (var ai = 0; ai < fd.actions.length; ai++) {
+      // Split action into bold heading (first sentence) and body
+      var actionText = fd.actions[ai];
+      var dotIdx = actionText.indexOf('. ');
+      var actionHeading = dotIdx > -1 ? actionText.substring(0, dotIdx + 1) : actionText;
+      var actionBody = dotIdx > -1 ? actionText.substring(dotIdx + 2) : '';
+
+      doc.setFillColor(220, 38, 38);
+      doc.circle(M + 4, y + 1, 3.5, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(255, 255, 255);
+      doc.text(String(ai + 1), M + 4, y + 2.5, { align: 'center' });
+
+      // Bold heading line
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor.apply(doc, dark);
+      var headingLines = doc.splitTextToSize(actionHeading, CW - 18);
+      doc.text(headingLines, M + 14, y + 2);
+      y += headingLines.length * 5 + 2;
+
+      // Normal body text
+      if (actionBody) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor.apply(doc, gray);
+        var bodyLines = doc.splitTextToSize(actionBody, CW - 18);
+        doc.text(bodyLines, M + 14, y + 2);
+        y += bodyLines.length * 5 + 8;
+      } else {
+        y += 8;
+      }
+    }
+
+    // Score table — check for page overflow
+    if (y > 230) { doc.addPage(); doc.setFillColor(0, 194, 159); doc.rect(0, 0, W, 4, 'F'); try { doc.addImage(CHIEF_LOGO, 'JPEG', M, 8, 40, 14); } catch(e) {} y = 30; }
+
+    y += 4;
+    doc.setDrawColor(229, 231, 235);
+    doc.line(M, y, W - M, y);
+    y += 10;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor.apply(doc, dark);
+    doc.text('Full Score Breakdown', M, y);
+    y += 10;
+
+    for (var si = 0; si < CATEGORIES.length; si++) {
+      var scat = CATEGORIES[si], ss = r.catScores[scat.id], isF = scat.id === r.focusId;
+      doc.setFont('helvetica', isF ? 'bold' : 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor.apply(doc, isF ? [220,38,38] : dark);
+      doc.text(scat.name + (isF ? ': Primary Failure Mode' : ''), M, y);
+      doc.text(String(ss) + ' / 100', W - M, y, { align: 'right' });
+      y += 8;
+    }
+
+    // CTA
+    y += 6;
+    doc.setDrawColor(229, 231, 235);
+    doc.line(M, y, W - M, y);
+    y += 10;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor.apply(doc, chief);
+    doc.text('Want to see pipeline risk before it becomes a missed quarter?', M, y);
+    y += 9;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor.apply(doc, chief);
+    doc.text('Schedule a demo \u2192 getchief.com/schedule-a-demo', M, y);
+
+    // Footers
+    for (var p = 1; p <= doc.getNumberOfPages(); p++) {
+      doc.setPage(p);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(180, 180, 180);
+      doc.text('\u00A9 Chief  |  getchief.com', M, 289);
+      doc.text('Page ' + p + ' of ' + doc.getNumberOfPages(), W - M, 289, { align: 'right' });
+    }
+
+    doc.save('Pipeline-Health-Scorecard-Report.pdf');
+  }
+
+  // ── RESTART ──
+  function restart() {
+    teamSize = null; segment = null; currentCat = 0; answers = {};
+    var teamBtns = document.querySelectorAll('#ps-team-options .ca-size-btn');
+    for (var i = 0; i < teamBtns.length; i++) teamBtns[i].classList.remove('ca-selected');
+    var segBtns = document.querySelectorAll('#ps-segment-options .ca-size-btn');
+    for (var j = 0; j < segBtns.length; j++) segBtns[j].classList.remove('ca-selected');
+    document.getElementById('ps-context-next').disabled = true;
+    showScreen('ps-intro');
+  }
+
+  // ── PUBLIC ──
+  return {
+    showContext: showContext,
+    selectTeamSize: selectTeamSize,
+    selectSegment: selectSegment,
+    startQuestions: startQuestions,
+    rate: rate,
+    nextCategory: nextCategory,
+    prevCategory: prevCategory,
+    downloadPDF: downloadPDF,
+    restart: restart
+  };
+})();
+</script>
+</body>
+</html>
