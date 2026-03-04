@@ -1495,37 +1495,6 @@ var psApp = (function() {
   };
 })();
 </script>
-<script>
-  function sendHeightToParent() {
-    const body = document.body;
-    const html = document.documentElement;
-
-    // Grab the absolute maximum height possible from the document
-    const height = Math.max(
-      body.scrollHeight, body.offsetHeight,
-      html.clientHeight, html.scrollHeight, html.offsetHeight
-    );
-
-    // Add a 40px buffer to account for hidden margins or shadows
-    const finalHeight = height + 40; 
-
-    window.parent.postMessage({ 
-      type: 'iframe-resize', 
-      height: finalHeight 
-    }, '*'); 
-  }
-
-  // A ResizeObserver watches the body and updates the height instantly 
-  // if anything renders late, expands, or changes size.
-  const observer = new ResizeObserver(() => {
-    sendHeightToParent();
-  });
-
-  // Start observing the body
-  observer.observe(document.body);
-
-  // Still run on initial load as a backup
-  window.addEventListener('load', sendHeightToParent);
-</script>   
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js"></script>  
 </body>
 </html>
