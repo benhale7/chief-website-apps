@@ -1495,5 +1495,26 @@ var psApp = (function() {
   };
 })();
 </script>
+   <script>
+  function sendHeightToParent() {
+    // Calculate the height of the content
+    const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+    
+    // Send the height to the parent window (Webflow)
+    window.parent.postMessage({ 
+      type: 'iframe-resize', 
+      height: height 
+    }, '*'); 
+  }
+
+  // Send the height when the page initially loads
+  window.addEventListener('load', sendHeightToParent);
+
+  // Send the height again if the window is resized
+  window.addEventListener('resize', sendHeightToParent);
+
+  // Optional: If your app has interactive elements (like accordions) that change the height 
+  // without resizing the window, you can run `sendHeightToParent()` whenever those are clicked.
+</script>
 </body>
 </html>
