@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +44,6 @@ body {
   color: var(--chief-off-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
 }
 
 h1, h2, h3, h4 {
@@ -54,7 +52,6 @@ h1, h2, h3, h4 {
 
 /* Subtle gradient background */
 .app-bg {
-  min-height: 100vh;
   background:
     radial-gradient(ellipse at 0% 0%, rgba(67, 63, 102, 0.35) 0%, transparent 50%),
     radial-gradient(ellipse at 100% 100%, rgba(102, 229, 206, 0.12) 0%, transparent 50%),
@@ -1606,6 +1603,7 @@ function restartAudit() {
   document.getElementById('auditContent').classList.remove('visible');
   document.getElementById('introScreen').style.display = '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  requestAnimationFrame(postHeight);
 }
 
 // ===== PDF GENERATION =====
@@ -1967,6 +1965,8 @@ function startAudit() {
   const content = document.getElementById('auditContent');
   content.classList.add('visible');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Let the parent iframe know the height changed
+  requestAnimationFrame(postHeight);
 }
 
 // ===== IFRAME AUTO-RESIZE =====
