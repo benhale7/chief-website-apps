@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Revenue Process Audit — Chief</title>
+<title>Sales Process Audit — Chief</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -912,8 +912,8 @@ h1, h2, h3, h4 {
         <defs><clipPath id="clip0_intro"><rect width="1008.77" height="287.523" fill="white"/></clipPath></defs>
       </svg>
     </div>
-    <h1>Revenue Process <span class="accent">Audit</span></h1>
-    <p>Score each statement 1–5 to find where your revenue process breaks down — and what to fix first.</p>
+    <h1>Sales Process <span class="accent">Audit</span></h1>
+    <p>Score each statement 1–5 to find where your sales process breaks down — and what to fix first.</p>
     <button class="start-btn" onclick="startAudit()">
       Start the Audit
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -941,8 +941,8 @@ h1, h2, h3, h4 {
         <defs><clipPath id="clip0_468_4139"><rect width="1008.77" height="287.523" fill="white"/></clipPath></defs>
       </svg>
     </div>
-    <h1>Revenue Process <span class="accent">Audit</span></h1>
-    <p>Score each statement 1–5 to find where your revenue process breaks down — and what to fix first.</p>
+    <h1>Sales Process <span class="accent">Audit</span></h1>
+    <p>Score each statement 1–5 to find where your sales process breaks down — and what to fix first.</p>
 
     <div class="scoring-key">
       <span class="key-item"><strong>1</strong> Not at all</span>
@@ -1130,7 +1130,7 @@ h1, h2, h3, h4 {
   <div class="results-section" id="resultsSection">
     <div class="results-header">
       <h2>Your Audit Results</h2>
-      <p>Here's where your revenue process stands — and where to focus.</p>
+      <p>Here's where your sales process stands — and where to focus.</p>
     </div>
 
     <div class="total-score-card">
@@ -1505,7 +1505,7 @@ function showResults() {
   } else if (totalScore >= 50) {
     interp.textContent = 'Multiple layers are failing. You\'re likely treating symptoms. Start with Layer 1 — everything else depends on it.';
   } else {
-    interp.textContent = 'The revenue process is fundamentally broken. The priority is stabilization: define your pipeline stages, establish basic CRM hygiene, and stop the bleeding before building anything on top.';
+    interp.textContent = 'The sales process is fundamentally broken. The priority is stabilization: define your pipeline stages, establish basic CRM hygiene, and stop the bleeding before building anything on top.';
   }
 
   // Layer summary cards
@@ -1675,7 +1675,7 @@ function generatePDF() {
   doc.setTextColor(...neutral50);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text('Revenue Process Audit', margin + 39, y + 4);
+  doc.text('Sales Process Audit', margin + 39, y + 4);
 
   y += 16;
 
@@ -1683,7 +1683,7 @@ function generatePDF() {
   doc.setTextColor(...offWhite);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(24);
-  doc.text('Revenue Process Audit Results', margin, y);
+  doc.text('Sales Process Audit Results', margin, y);
   y += 10;
 
   // Date
@@ -1751,7 +1751,7 @@ function generatePDF() {
   if (totalScore >= 100) interpretation = 'Architecture is solid. Focus on incremental improvements in your lowest-scoring layer.';
   else if (totalScore >= 75) interpretation = 'One or two layers are significantly broken. Identify the lowest-scoring layer and start there.';
   else if (totalScore >= 50) interpretation = 'Multiple layers are failing. Start with Layer 1 — everything else depends on it.';
-  else interpretation = 'The revenue process is fundamentally broken. Priority is stabilization: define pipeline stages, establish CRM hygiene, and stop the bleeding.';
+  else interpretation = 'The sales process is fundamentally broken. Priority is stabilization: define pipeline stages, establish CRM hygiene, and stop the bleeding.';
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
@@ -1956,11 +1956,11 @@ function generatePDF() {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
     doc.setTextColor(...neutral50);
-    doc.text('Chief · Revenue Process Audit · getchief.com', margin, H - 10);
+    doc.text('Chief · Sales Process Audit · getchief.com', margin, H - 10);
     doc.text(`Page ${p} of ${lastPage}`, W - margin - 20, H - 10);
   }
 
-  doc.save('Chief-Revenue-Process-Audit.pdf');
+  doc.save('Chief-Sales-Process-Audit.pdf');
   } // end finishPDF
 }
 
