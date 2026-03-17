@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revenue Process Audit — Chief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --chief-green: #00C29F;
+  --chief-midnight: #012E34;
+  --chief-off-white: #F2F6F7;
+  --chief-purple: #EFE4FE;
+  --chief-raisin: #2F2D33;
+  --periwinkle: #A299F7;
+  --salmon: #FF9B82;
+  --corn: #FFF27F;
+  --green-10: #E6FBF7;
+  --green-40: #66E5CE;
+  --green-100: #00A48A;
+  --green-200: #008774;
+  --green-300: #016959;
+  --green-400: #014C49;
+  --neutral-10: #D8E2E4;
+  --neutral-20: #C0CED0;
+  --neutral-30: #A8BABD;
+  --neutral-40: #90A6A9;
+  --neutral-50: #6C878B;
+  --neutral-60: #517175;
+  --neutral-70: #375A5F;
+  --neutral-80: #1C444A;
+  --neutral-100: #011B1F;
+  --salmon-40: #FFBCAC;
+  --periwinkle-400: #433F66;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--chief-midnight);
+  color: var(--chief-off-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Subtle gradient background */
+.app-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(67, 63, 102, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(102, 229, 206, 0.12) 0%, transparent 50%),
+    var(--chief-midnight);
+}
+
+/* ===== LAYOUT ===== */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  padding: 48px 0 0;
+  text-align: center;
+}
+
+.logo-mark {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.logo-mark svg {
+  height: 30px;
+  width: auto;
+}
+
+.header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.header h1 .accent {
+  color: var(--chief-green);
+}
+
+.header p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--neutral-30);
+  max-width: 540px;
+  margin: 0 auto 12px;
+}
+
+.scoring-key {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.scoring-key .key-item {
+  background: rgba(242, 246, 247, 0.06);
+  border: 1px solid rgba(242, 246, 247, 0.12);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-30);
+  white-space: nowrap;
+}
+
+.scoring-key .key-item strong {
+  color: var(--chief-off-white);
+  font-weight: 600;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 40px;
+  padding: 0 4px;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.progress-step:last-child {
+  flex: 0;
+}
+
+.step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(242, 246, 247, 0.08);
+  border: 2px solid rgba(242, 246, 247, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neutral-50);
+  position: relative;
+  z-index: 2;
+  transition: all 0.4s ease;
+  flex-shrink: 0;
+}
+
+.step-dot .check-icon {
+  display: none;
+}
+
+.progress-step.active .step-dot {
+  background: var(--chief-green);
+  border-color: var(--chief-green);
+  color: var(--chief-midnight);
+  box-shadow: 0 0 0 4px rgba(0, 194, 159, 0.2);
+}
+
+.progress-step.completed .step-dot {
+  background: var(--chief-green);
+  border-color: var(--chief-green);
+  color: var(--chief-midnight);
+}
+
+.progress-step.completed .step-dot .step-num {
+  display: none;
+}
+
+.progress-step.completed .step-dot .check-icon {
+  display: block;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(242, 246, 247, 0.12);
+  transition: background 0.4s ease;
+}
+
+.progress-step.completed .step-line {
+  background: var(--chief-green);
+}
+
+.step-label {
+  position: absolute;
+  top: 44px;
+  left: 18px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-50);
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.progress-step.active .step-label {
+  color: var(--chief-green);
+}
+
+.progress-step.completed .step-label {
+  color: var(--neutral-30);
+}
+
+/* ===== LAYER SECTION ===== */
+.layer-section {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.layer-section.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.layer-header {
+  margin-bottom: 32px;
+}
+
+.layer-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--chief-green);
+  background: rgba(0, 194, 159, 0.12);
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+
+.layer-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.layer-header p {
+  font-size: 15px;
+  color: var(--neutral-30);
+  line-height: 1.55;
+}
+
+/* ===== QUESTION CARD ===== */
+.question-card {
+  background: rgba(242, 246, 247, 0.05);
+  border: 1px solid rgba(242, 246, 247, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.question-card:hover {
+  border-color: rgba(242, 246, 247, 0.16);
+  background: rgba(242, 246, 247, 0.07);
+}
+
+.question-card.answered {
+  border-color: rgba(0, 194, 159, 0.3);
+  background: rgba(0, 194, 159, 0.06);
+}
+
+.question-number {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-50);
+  margin-bottom: 10px;
+}
+
+.question-text {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--chief-off-white);
+  margin-bottom: 20px;
+}
+
+/* ===== RATING SELECTOR ===== */
+.rating-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.rating-btn {
+  flex: 1;
+  height: 48px;
+  border: 1.5px solid rgba(242, 246, 247, 0.12);
+  border-radius: 12px;
+  background: rgba(242, 246, 247, 0.03);
+  color: var(--neutral-30);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.rating-btn:hover {
+  border-color: rgba(242, 246, 247, 0.25);
+  color: var(--chief-off-white);
+  background: rgba(242, 246, 247, 0.08);
+}
+
+.rating-btn.selected {
+  border-color: var(--chief-green);
+  background: rgba(0, 194, 159, 0.12);
+  color: var(--chief-green);
+}
+
+.rating-btn .rating-label {
+  display: none;
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--neutral-50);
+}
+
+.rating-btn:hover .rating-label,
+.rating-btn.selected .rating-label {
+  display: block;
+}
+
+/* ===== LAYER SCORE / DIAGNOSIS ===== */
+.layer-result {
+  display: none;
+  margin-top: 32px;
+  animation: fadeIn 0.5s ease;
+}
+
+.layer-result.visible {
+  display: block;
+}
+
+.score-display {
+  text-align: center;
+  padding: 32px 24px;
+  background: rgba(242, 246, 247, 0.05);
+  border: 1px solid rgba(242, 246, 247, 0.1);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.score-ring {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+}
+
+.score-ring svg {
+  transform: rotate(-90deg);
+}
+
+.score-ring .ring-bg {
+  fill: none;
+  stroke: rgba(242, 246, 247, 0.1);
+  stroke-width: 8;
+}
+
+.score-ring .ring-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease, stroke 0.5s ease;
+}
+
+.score-ring .score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.score-ring .score-max {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% + 22px));
+  font-size: 13px;
+  color: var(--neutral-50);
+  font-weight: 500;
+}
+
+.diagnosis-card {
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.diagnosis-card.green {
+  background: rgba(0, 194, 159, 0.1);
+  border: 1px solid rgba(0, 194, 159, 0.25);
+}
+
+.diagnosis-card.yellow {
+  background: rgba(255, 242, 127, 0.08);
+  border: 1px solid rgba(255, 242, 127, 0.2);
+}
+
+.diagnosis-card.red {
+  background: rgba(255, 155, 130, 0.08);
+  border: 1px solid rgba(255, 155, 130, 0.2);
+}
+
+.diagnosis-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.diagnosis-card.green .diagnosis-label { color: var(--chief-green); }
+.diagnosis-card.yellow .diagnosis-label { color: var(--corn); }
+.diagnosis-card.red .diagnosis-label { color: var(--salmon); }
+
+.diagnosis-text {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--chief-off-white);
+}
+
+/* ===== NAVIGATION BUTTONS ===== */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-bottom: 64px;
+}
+
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px 28px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background: var(--chief-green);
+  color: var(--chief-midnight);
+}
+
+.btn-primary:hover {
+  background: var(--green-40);
+}
+
+.btn-primary:disabled {
+  background: var(--neutral-60);
+  color: var(--neutral-40);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--chief-off-white);
+  border: 1.5px solid rgba(242, 246, 247, 0.18);
+}
+
+.btn-secondary:hover {
+  border-color: rgba(242, 246, 247, 0.3);
+  background: rgba(242, 246, 247, 0.06);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--neutral-30);
+  border: none;
+}
+
+.btn-ghost:hover {
+  color: var(--chief-off-white);
+}
+
+/* ===== RESULTS PAGE ===== */
+.results-section {
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+
+.results-section.active {
+  display: block;
+}
+
+.results-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.results-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.results-header p {
+  color: var(--neutral-30);
+  font-size: 15px;
+}
+
+.total-score-card {
+  text-align: center;
+  background: rgba(242, 246, 247, 0.05);
+  border: 1px solid rgba(242, 246, 247, 0.1);
+  border-radius: 12px;
+  padding: 40px 24px;
+  margin-bottom: 32px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.total-score-number {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.total-score-max {
+  font-size: 15px;
+  color: var(--neutral-50);
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.total-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(242, 246, 247, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.total-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 1s ease;
+}
+
+.total-interpretation {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--chief-off-white);
+}
+
+/* Layer summary cards */
+.layer-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 560px) {
+  .layer-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.layer-summary-card {
+  background: rgba(242, 246, 247, 0.05);
+  border: 1px solid rgba(242, 246, 247, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.layer-summary-card .layer-name {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--neutral-50);
+  margin-bottom: 8px;
+}
+
+.layer-summary-card .layer-score {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.layer-summary-card .layer-max {
+  font-size: 13px;
+  color: var(--neutral-50);
+  margin-bottom: 12px;
+}
+
+.layer-summary-card .mini-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(242, 246, 247, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.layer-summary-card .mini-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* Priority fix section */
+.priority-section {
+  background: rgba(242, 246, 247, 0.05);
+  border: 1px solid rgba(242, 246, 247, 0.1);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.priority-section h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.priority-section .priority-desc {
+  font-size: 14px;
+  color: var(--neutral-30);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.priority-field {
+  margin-bottom: 20px;
+}
+
+.priority-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-30);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.priority-field textarea,
+.priority-field input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--chief-midnight);
+  border: 1px solid rgba(242, 246, 247, 0.12);
+  border-radius: 12px;
+  color: var(--chief-off-white);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.priority-field textarea:focus,
+.priority-field input:focus {
+  outline: none;
+  border-color: var(--chief-green);
+  box-shadow: 0 0 0 3px rgba(0, 194, 159, 0.15);
+}
+
+.priority-field textarea {
+  min-height: 72px;
+}
+
+/* Next steps list */
+.next-step-item {
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(242, 246, 247, 0.06);
+}
+
+.next-step-item:last-child {
+  border-bottom: none;
+}
+
+.step-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 194, 159, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.step-icon svg {
+  width: 14px;
+  height: 14px;
+  color: var(--chief-green);
+}
+
+.step-content h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--chief-off-white);
+}
+
+.step-content p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--neutral-30);
+}
+
+/* PDF button */
+.download-section {
+  text-align: center;
+  padding: 32px 0 64px;
+}
+
+.download-section p {
+  font-size: 13px;
+  color: var(--neutral-50);
+  margin-top: 12px;
+}
+
+/* ===== INTRO SCREEN ===== */
+.intro-section {
+  text-align: center;
+  padding-top: 20px;
+}
+
+.intro-section .start-info {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.intro-section .info-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--neutral-30);
+}
+
+.intro-section .info-chip svg {
+  width: 16px;
+  height: 16px;
+  color: var(--chief-green);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .header h1 { font-size: 28px; }
+  .layer-header h2 { font-size: 24px; }
+  .rating-selector { gap: 6px; }
+  .rating-btn { height: 44px; font-size: 15px; }
+  .container { padding: 0 16px; }
+  .question-card { padding: 20px; }
+  .step-label { font-size: 10px; }
+  .total-score-number { font-size: 48px; }
+  .scoring-key .key-item { font-size: 12px; padding: 4px 10px; }
+}
+</style>
+</head>
+<body>
+<div class="app-bg">
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo-mark">
+      <svg width="120" height="34" viewBox="0 0 1009 288" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_468_4139)">
+          <path d="M223.484 98.1133C242.34 98.1133 257.626 82.8274 257.626 63.9712C257.626 45.1151 242.34 29.8292 223.484 29.8292C204.628 29.8292 189.342 45.1151 189.342 63.9712C189.342 82.8274 204.628 98.1133 223.484 98.1133Z" fill="#00C29F"/>
+          <path d="M89.8868 10.0115C82.295 17.6033 79.0444 27.8794 80.093 37.7781H80.0511C81.1835 48.9351 77.4715 60.4696 68.936 69.0051C60.4005 77.5406 48.5725 81.3155 37.2896 80.0572V80.1201C27.5168 79.1973 17.4084 82.4689 9.9215 89.9558C-3.41654 103.294 -3.41654 124.895 9.9215 138.233C23.2595 151.571 44.8605 151.571 58.1985 138.233C65.8112 130.62 69.0619 120.323 67.9713 110.403H68.0342C66.9437 99.2883 70.6347 87.7748 79.1493 79.2602C87.6219 70.7877 99.0724 67.0757 110.146 68.1242L110.125 68.0613C120.107 69.1938 130.488 65.9641 138.164 58.3095C151.502 44.9714 151.502 23.3705 138.164 10.0325C124.826 -3.30558 103.225 -3.30558 89.8868 10.0325V10.0115Z" fill="#00C29F"/>
+          <path d="M229.192 149.308C221.601 156.9 218.35 167.176 219.399 177.075H219.357C220.489 188.232 216.777 199.766 208.242 208.302C199.706 216.837 187.878 220.612 176.595 219.354V219.417C166.822 218.494 156.714 221.766 149.227 229.252C135.889 242.591 135.889 264.191 149.227 277.529C162.565 290.868 184.166 290.868 197.504 277.529C205.117 269.917 208.368 259.62 207.277 249.7H207.34C206.249 238.585 209.94 227.071 218.455 218.557C226.969 210.042 238.378 206.372 249.451 207.421L249.43 207.358C259.413 208.49 269.794 205.261 277.469 197.606C290.808 184.268 290.808 162.667 277.469 149.329C264.131 135.991 242.531 135.991 229.192 149.329V149.308Z" fill="#00C29F"/>
+          <path d="M187.455 109.307C189.782 106.35 189.531 102.282 186.888 99.6393C184.246 96.9969 180.156 96.7452 177.22 99.0731C160.003 112.642 135.969 112.642 118.751 99.0731C115.794 96.7452 111.726 96.9759 109.083 99.6393C106.42 102.303 106.189 106.371 108.517 109.307C122.086 126.525 122.086 150.559 108.517 167.777L103.064 173.229C94.4239 181.87 82.7006 185.54 71.4388 184.281V184.344C61.666 183.421 51.5576 186.693 44.0707 194.18C30.7326 207.518 30.7326 229.119 44.0707 242.457C57.4087 255.795 79.0096 255.795 92.3477 242.457C99.9604 234.844 103.211 224.547 102.12 214.627H102.183C101.093 203.512 104.784 191.999 113.298 183.484L118.751 178.032C135.969 164.463 160.003 164.463 177.22 178.032C178.584 179.101 180.156 179.626 181.75 179.626C183.617 179.626 185.462 178.892 186.888 177.465C189.552 174.802 189.782 170.734 187.455 167.798C173.886 150.58 173.886 126.546 187.455 109.328V109.307Z" fill="#00C29F"/>
+          <path d="M936.412 99.8068V85.8887C936.412 73.5171 939.596 64.2384 945.964 58.0526C952.331 51.6848 962.156 48.501 975.437 48.501H1003.82V74.4268H979.531C974.801 74.4268 971.344 75.5184 969.161 77.7016C967.159 79.8848 966.159 83.3416 966.159 88.0719V99.8068H1003.55V125.733H966.159V239.533H936.412V125.733H912.124V99.8068H936.412Z" fill="#F2F6F7"/>
+          <path d="M767.542 169.952C767.542 155.579 770.362 143.025 776.002 132.291C781.824 121.375 789.829 113.006 800.018 107.184C810.388 101.18 822.214 98.1783 835.495 98.1783C848.958 98.1783 860.784 100.907 870.972 106.365C881.343 111.823 889.439 119.556 895.261 129.562C901.265 139.569 904.358 151.303 904.54 164.767C904.54 168.405 904.267 172.135 903.721 175.956H798.38V177.593C799.108 189.783 802.929 199.425 809.842 206.521C816.756 213.616 825.943 217.164 837.405 217.164C846.502 217.164 854.143 215.072 860.329 210.887C866.515 206.521 870.609 200.426 872.61 192.603H902.083C899.536 206.794 892.623 218.438 881.343 227.534C870.245 236.631 856.327 241.18 839.589 241.18C825.034 241.18 812.298 238.269 801.382 232.447C790.648 226.443 782.279 218.074 776.275 207.34C770.453 196.605 767.542 184.143 767.542 169.952ZM874.52 154.396C873.247 144.208 869.153 136.294 862.24 130.654C855.508 124.832 846.957 121.921 836.587 121.921C826.944 121.921 818.575 124.923 811.48 130.927C804.566 136.749 800.564 144.572 799.472 154.396H874.52Z" fill="#F2F6F7"/>
+          <path d="M729.162 43.8669C734.256 43.8669 738.531 45.5953 741.988 49.0521C745.445 52.3269 747.173 56.5114 747.173 61.6056C747.173 66.6998 745.445 70.9753 741.988 74.4321C738.531 77.7069 734.256 79.3443 729.162 79.3443C724.068 79.3443 719.792 77.7069 716.335 74.4321C712.879 70.9753 711.15 66.6998 711.15 61.6056C711.15 56.5114 712.879 52.3269 716.335 49.0521C719.792 45.5953 724.068 43.8669 729.162 43.8669ZM714.425 99.8121H743.899V239.538H714.425V99.8121Z" fill="#F2F6F7"/>
+          <path d="M631.104 98.1693C647.842 98.1693 661.396 103.264 671.766 113.452C682.319 123.64 687.595 140.014 687.595 162.574V239.533H658.121V164.212C658.121 150.931 655.21 140.833 649.388 133.92C643.748 127.006 635.47 123.549 624.554 123.549C612.91 123.549 603.723 127.643 596.991 135.83C590.441 143.835 587.166 154.842 587.166 168.851V239.533H557.693V48.501H587.166V120.002C597.719 105.447 612.364 98.1693 631.104 98.1693Z" fill="#F2F6F7"/>
+          <path d="M360.64 144.019C360.64 124.734 364.37 107.814 371.829 93.2592C379.47 78.5225 390.204 67.1515 404.031 59.1464C418.041 50.9593 434.324 46.8657 452.881 46.8657C467.254 46.8657 480.171 49.5948 491.633 55.0528C503.277 60.5109 512.738 68.3341 520.015 78.5225C527.293 88.5289 531.932 100.173 533.933 113.454H502.549C499.457 101.264 493.453 91.7128 484.538 84.7992C475.623 77.8857 464.616 74.4289 451.517 74.4289C439.691 74.4289 429.32 77.4309 420.406 83.4347C411.491 89.2567 404.668 97.4438 399.938 107.996C395.208 118.366 392.842 130.374 392.842 144.019C392.842 157.482 395.208 169.49 399.938 180.042C404.668 190.595 411.491 198.873 420.406 204.877C429.32 210.699 439.691 213.609 451.517 213.609C464.616 213.609 475.532 210.153 484.265 203.239C493.18 196.326 499.184 186.774 502.277 174.584H533.66C531.659 188.048 527.02 199.782 519.742 209.789C512.647 219.795 503.368 227.528 491.906 232.986C480.444 238.444 467.436 241.173 452.881 241.173C434.324 241.173 418.041 237.17 404.031 229.165C390.204 221.16 379.47 209.88 371.829 195.325C364.37 180.588 360.64 163.486 360.64 144.019Z" fill="#F2F6F7"/>
+        </g>
+        <defs><clipPath id="clip0_468_4139"><rect width="1008.77" height="287.523" fill="white"/></clipPath></defs>
+      </svg>
+    </div>
+    <h1>Revenue Process <span class="accent">Audit</span></h1>
+    <p>Score each statement 1–5 to find where your revenue process breaks down — and what to fix first.</p>
+
+    <div class="scoring-key">
+      <span class="key-item"><strong>1</strong> Not at all</span>
+      <span class="key-item"><strong>2</strong> Rarely</span>
+      <span class="key-item"><strong>3</strong> Sometimes</span>
+      <span class="key-item"><strong>4</strong> Usually</span>
+      <span class="key-item"><strong>5</strong> Consistently</span>
+    </div>
+  </header>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-step active" data-step="0">
+      <div class="step-dot">
+        <span class="step-num">1</span>
+        <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="step-line"></div>
+      <span class="step-label">Pipeline</span>
+    </div>
+    <div class="progress-step" data-step="1">
+      <div class="step-dot">
+        <span class="step-num">2</span>
+        <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="step-line"></div>
+      <span class="step-label">Deal</span>
+    </div>
+    <div class="progress-step" data-step="2">
+      <div class="step-dot">
+        <span class="step-num">3</span>
+        <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="step-line"></div>
+      <span class="step-label">Forecast</span>
+    </div>
+    <div class="progress-step" data-step="3">
+      <div class="step-dot">
+        <span class="step-num">4</span>
+        <svg class="check-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="step-line"></div>
+      <span class="step-label">Performance</span>
+    </div>
+    <div class="progress-step" data-step="4">
+      <div class="step-dot">
+        <span class="step-num">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <span class="step-label">Results</span>
+    </div>
+  </div>
+
+  <!-- LAYER 1: Pipeline Process -->
+  <div class="layer-section active" id="layer0">
+    <div class="layer-header">
+      <div class="layer-tag">Layer 1</div>
+      <h2>Pipeline Process</h2>
+      <p>How opportunities enter, get qualified, and progress through stages.</p>
+    </div>
+    <div id="questions0"></div>
+    <div class="layer-result" id="result0">
+      <div class="score-display">
+        <div class="score-ring">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="ring-fill" cx="60" cy="60" r="52" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+          </svg>
+          <span class="score-text" id="scoreText0">0</span>
+          <span class="score-max">/ 30</span>
+        </div>
+      </div>
+      <div id="diagnosis0"></div>
+    </div>
+    <div class="nav-buttons">
+      <div></div>
+      <button class="btn btn-primary" id="next0" disabled onclick="nextLayer(0)">
+        Continue
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- LAYER 2: Deal Process -->
+  <div class="layer-section" id="layer1">
+    <div class="layer-header">
+      <div class="layer-tag">Layer 2</div>
+      <h2>Deal Process</h2>
+      <p>How individual deals are managed, inspected, and unblocked.</p>
+    </div>
+    <div id="questions1"></div>
+    <div class="layer-result" id="result1">
+      <div class="score-display">
+        <div class="score-ring">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="ring-fill" cx="60" cy="60" r="52" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+          </svg>
+          <span class="score-text" id="scoreText1">0</span>
+          <span class="score-max">/ 30</span>
+        </div>
+      </div>
+      <div id="diagnosis1"></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="prevLayer(1)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3l-5 5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <button class="btn btn-primary" id="next1" disabled onclick="nextLayer(1)">
+        Continue
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- LAYER 3: Forecasting Process -->
+  <div class="layer-section" id="layer2">
+    <div class="layer-header">
+      <div class="layer-tag">Layer 3</div>
+      <h2>Forecasting Process</h2>
+      <p>How deal data gets converted into a number the business can plan around.</p>
+    </div>
+    <div id="questions2"></div>
+    <div class="layer-result" id="result2">
+      <div class="score-display">
+        <div class="score-ring">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="ring-fill" cx="60" cy="60" r="52" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+          </svg>
+          <span class="score-text" id="scoreText2">0</span>
+          <span class="score-max">/ 30</span>
+        </div>
+      </div>
+      <div id="diagnosis2"></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="prevLayer(2)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3l-5 5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <button class="btn btn-primary" id="next2" disabled onclick="nextLayer(2)">
+        Continue
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- LAYER 4: Performance Process -->
+  <div class="layer-section" id="layer3">
+    <div class="layer-header">
+      <div class="layer-tag">Layer 4</div>
+      <h2>Performance Process</h2>
+      <p>How managers use process data to develop reps.</p>
+    </div>
+    <div id="questions3"></div>
+    <div class="layer-result" id="result3">
+      <div class="score-display">
+        <div class="score-ring">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="ring-fill" cx="60" cy="60" r="52" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+          </svg>
+          <span class="score-text" id="scoreText3">0</span>
+          <span class="score-max">/ 35</span>
+        </div>
+      </div>
+      <div id="diagnosis3"></div>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-ghost" onclick="prevLayer(3)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3l-5 5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <button class="btn btn-primary" id="next3" disabled onclick="showResults()">
+        See Results
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <h2>Your Audit Results</h2>
+      <p>Here's where your revenue process stands — and where to focus.</p>
+    </div>
+
+    <div class="total-score-card">
+      <div class="total-score-number" id="totalScoreNum">0</div>
+      <div class="total-score-max">out of 125</div>
+      <div class="total-bar">
+        <div class="total-bar-fill" id="totalBarFill" style="width: 0%"></div>
+      </div>
+      <div class="total-interpretation" id="totalInterpretation"></div>
+    </div>
+
+    <div class="layer-summary-grid" id="layerSummaryGrid"></div>
+
+    <div class="priority-section">
+      <h3>Recommended Next Steps</h3>
+      <p class="priority-desc" id="priorityDesc"></p>
+      <div id="nextStepsList"></div>
+    </div>
+
+    <div class="download-section">
+      <button class="btn btn-primary" onclick="generatePDF()" style="font-size: 16px; padding: 16px 32px;">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v8m0 0l-3-3m3 3l3-3M3 13v1a2 2 0 002 2h8a2 2 0 002-2v-1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download PDF Report
+      </button>
+    </div>
+
+    <div class="nav-buttons" style="justify-content: center; gap: 16px;">
+      <button class="btn btn-secondary" onclick="restartAudit()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 0111.47-2.47M14 8a6 6 0 01-11.47 2.47" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M14 2v4h-4M2 14v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Start Over
+      </button>
+    </div>
+
+    <div style="text-align: center; padding: 32px 0 48px; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 32px;">
+      <p style="font-size: 14px; color: var(--neutral-30);"><a href="https://www.getchief.com/schedule-a-demo" style="color: var(--chief-green); text-decoration: none; font-weight: 500;">Schedule a demo</a> to see how Chief surfaces process breakdowns automatically.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ===== DATA =====
+const layers = [
+  {
+    name: 'Pipeline Process',
+    shortName: 'Pipeline',
+    max: 30,
+    questions: [
+      'Our pipeline stage definitions are documented in writing and based on specific buyer actions — not seller activities like "sent proposal" or "demo completed."',
+      'If I asked five different reps what it means for a deal to be in Stage 3, I\'d get the same answer from all five.',
+      'Deals can only advance to the next stage when specific criteria are documented in the CRM — this is enforced, not assumed.',
+      'We have a formal process for identifying and removing zombie deals (no meaningful buyer contact in 45+ days).',
+      'When I look at my late-stage pipeline, I\'m confident every deal has a named economic buyer, a confirmed budget signal, and a specific next step with a date.',
+      'My pipeline coverage ratio — excluding stale deals, missing fields, and past-due close dates — consistently meets the benchmark for my segment.'
+    ],
+    diagnosis: [
+      { min: 24, color: 'green', label: 'Solid', text: 'Pipeline process is solid. Move to Layer 2.' },
+      { min: 16, color: 'yellow', label: 'Needs work', text: 'Stage definitions or qualification criteria need tightening. Start there.' },
+      { min: 0, color: 'red', label: 'Critical', text: 'Pipeline process is your primary failure mode. Everything downstream is corrupted by this.' }
+    ]
+  },
+  {
+    name: 'Deal Process',
+    shortName: 'Deal',
+    max: 30,
+    questions: [
+      'Every active opportunity in my CRM has a documented next step with a specific action, date, and owner — not "follow up" or "waiting on customer."',
+      'My team has explicit multi-threading requirements: deals above a certain size or stage must have relationships with more than one stakeholder.',
+      'I can identify the economic buyer by name for every deal in my late-stage pipeline, and my reps have had a direct conversation with that person in the last 30 days.',
+      'We have defined inspection triggers: specific conditions (no activity, single-threaded, close date passed) that automatically surface a deal for manager review.',
+      'My pipeline reviews are exception-based — we focus on the three to five deals that need a decision, not a status update on every deal in the funnel.',
+      'When a deal stalls at a specific stage, I have a diagnostic process for identifying why — not just asking the rep what happened.'
+    ],
+    diagnosis: [
+      { min: 24, color: 'green', label: 'Working', text: 'Deal process is working. Inspect Layer 3.' },
+      { min: 16, color: 'yellow', label: 'Inconsistent', text: 'Deal inspection or multi-threading is inconsistent. Tighten the inspection triggers first.' },
+      { min: 0, color: 'red', label: 'Critical', text: 'Deal process is your primary failure mode. Reps are improvising where they should be executing.' }
+    ]
+  },
+  {
+    name: 'Forecasting Process',
+    shortName: 'Forecast',
+    max: 30,
+    questions: [
+      'Every deal in my forecast carries the same required data fields: stage, close date, deal value, last meaningful buyer action, and specific next step.',
+      'My forecast methodology weights deals on behavioral signals (buyer engagement, stakeholder count, qualification criteria) — not just CRM stage probability.',
+      'I compare my forecasted number to actual closes every quarter and document the variance. I know where our forecasts tend to go wrong.',
+      'My forecast variance is consistently below 15% (forecasted revenue vs. actual closed revenue).',
+      'My close dates in the CRM are based on specific customer events or milestones — not end-of-quarter defaults.',
+      'When I present a forecast to leadership, I can defend each committed deal with specific evidence — not rep confidence or relationship history.'
+    ],
+    diagnosis: [
+      { min: 24, color: 'green', label: 'Reliable', text: 'Forecasting process is reliable. Move to Layer 4.' },
+      { min: 16, color: 'yellow', label: 'Needs work', text: 'Input consistency or weighting methodology needs work. Fix the inputs before improving the model.' },
+      { min: 0, color: 'red', label: 'Critical', text: 'Forecasting process is your primary failure mode. You\'re guessing, not forecasting.' }
+    ]
+  },
+  {
+    name: 'Performance Process',
+    shortName: 'Performance',
+    max: 35,
+    questions: [
+      'My coaching conversations are driven by deal-level behavioral data — not rep self-reporting or call recordings alone.',
+      'I know which pipeline stage has the highest drop rate for each of my reps, and I\'m actively coaching to it.',
+      'I can identify the behavioral differences between my top-performing and average-performing reps — specifically, what they do differently at the deal level.',
+      'My performance reviews are forward-looking (what will this rep do differently next quarter?) rather than backward-looking (what went wrong on the last lost deal?).',
+      'I have a documented ramp process for new reps that accelerates their path to quota — it\'s not just "shadow a senior rep for 30 days."',
+      'My coaching cadence is consistent: I have regularly scheduled 1:1s that focus on deal strategy, not just status updates.',
+      'My Layers 1–3 are functioning well enough that I can actually trust the data I\'m coaching to.'
+    ],
+    diagnosis: [
+      { min: 28, color: 'green', label: 'Data-driven', text: 'Performance process is data-driven. You\'re in good shape.' },
+      { min: 18, color: 'yellow', label: 'Needs improvement', text: 'Coaching inputs need improvement. Check whether Layers 1–3 are producing clean enough data.' },
+      { min: 0, color: 'red', label: 'Reactive', text: 'Performance process is reactive and narrative-based. This is almost always downstream of a Layer 1 or 2 problem — fix the foundation first.' }
+    ]
+  }
+];
+
+const ratingLabels = ['Not at all', 'Rarely', 'Sometimes', 'Usually', 'Consistently'];
+
+// Recommended next steps per layer, by severity
+const nextSteps = {
+  0: { // Pipeline
+    red: [
+      { title: 'Document pipeline stage definitions', desc: 'Write down buyer-action-based criteria for every stage. Get sign-off from your team before enforcing in CRM.' },
+      { title: 'Audit current pipeline for zombie deals', desc: 'Pull every deal with no meaningful buyer contact in 45+ days and either re-qualify or remove it.' },
+      { title: 'Establish baseline CRM hygiene', desc: 'Require economic buyer, budget signal, and a dated next step for every late-stage deal.' }
+    ],
+    yellow: [
+      { title: 'Tighten stage exit criteria', desc: 'Ensure deals can only advance when specific buyer actions are documented — not just seller activities.' },
+      { title: 'Align reps on stage definitions', desc: 'Run a calibration session where every rep defines each stage. Close the gaps.' },
+      { title: 'Recalculate pipeline coverage', desc: 'Exclude stale deals, missing fields, and past-due close dates to get a real coverage number.' }
+    ],
+    green: [
+      { title: 'Automate zombie deal flagging', desc: 'Set up automated alerts for deals with no activity in 30+ days before they hit 45.' },
+      { title: 'Benchmark and refine', desc: 'Compare your clean pipeline coverage to segment benchmarks and adjust targets quarterly.' }
+    ]
+  },
+  1: { // Deal
+    red: [
+      { title: 'Define and enforce next step standards', desc: 'Every active deal must have a specific action, date, and owner — not "follow up" or "waiting."' },
+      { title: 'Build inspection triggers', desc: 'Identify conditions (no activity, single-threaded, slipped close date) that auto-surface deals for review.' },
+      { title: 'Shift to exception-based reviews', desc: 'Stop reviewing every deal. Focus pipeline meetings on the 3–5 deals that need a decision.' }
+    ],
+    yellow: [
+      { title: 'Enforce multi-threading requirements', desc: 'Set explicit rules: deals above a certain size or stage must have 2+ stakeholder relationships.' },
+      { title: 'Create a stall diagnostic process', desc: 'When deals stall, use data to identify why — don\'t rely on rep self-reporting alone.' },
+      { title: 'Verify economic buyer access', desc: 'Confirm your reps have had direct contact with the economic buyer on every late-stage deal in the last 30 days.' }
+    ],
+    green: [
+      { title: 'Optimize inspection cadence', desc: 'Fine-tune trigger thresholds based on your actual win/loss data from the last two quarters.' },
+      { title: 'Document playbooks for common stall patterns', desc: 'Turn your diagnostic process into repeatable plays reps can run independently.' }
+    ]
+  },
+  2: { // Forecast
+    red: [
+      { title: 'Standardize required forecast fields', desc: 'Every forecasted deal must carry: stage, close date, deal value, last buyer action, and specific next step.' },
+      { title: 'Replace stage-probability with behavioral signals', desc: 'Weight deals on engagement, stakeholder count, and qualification criteria — not just CRM stage.' },
+      { title: 'Start tracking forecast variance', desc: 'Compare forecast to actuals every quarter. Document where and why the numbers diverged.' }
+    ],
+    yellow: [
+      { title: 'Audit close date accuracy', desc: 'Replace end-of-quarter defaults with dates tied to specific customer milestones.' },
+      { title: 'Build evidence-based commit criteria', desc: 'Define what evidence is required to commit a deal — not just rep confidence or gut feel.' },
+      { title: 'Set a 15% variance target', desc: 'Track your progress toward consistent sub-15% forecast variance over the next two quarters.' }
+    ],
+    green: [
+      { title: 'Refine your weighting model', desc: 'Use historical win/loss data to calibrate which behavioral signals best predict outcomes.' },
+      { title: 'Stress-test committed deals', desc: 'Challenge each committed deal with specific evidence requirements before finalizing the forecast.' }
+    ]
+  },
+  3: { // Performance
+    red: [
+      { title: 'Fix Layers 1–3 first', desc: 'Performance coaching is almost always downstream of pipeline or deal process problems. Fix the foundation before coaching to it.' },
+      { title: 'Establish a consistent coaching cadence', desc: 'Schedule regular 1:1s focused on deal strategy, not status updates. Make it non-negotiable.' },
+      { title: 'Identify per-rep stage drop-off rates', desc: 'Pull the data on where each rep loses deals most often. Coach to that specific stage.' }
+    ],
+    yellow: [
+      { title: 'Move coaching from narrative to data', desc: 'Use deal-level behavioral data to drive coaching conversations, not just call recordings or rep self-reports.' },
+      { title: 'Document a structured ramp process', desc: 'Replace "shadow a senior rep" with a milestone-based ramp plan that accelerates time to quota.' },
+      { title: 'Identify top-performer behaviors', desc: 'Analyze what your best reps do differently at the deal level and codify it for the rest of the team.' }
+    ],
+    green: [
+      { title: 'Shift to forward-looking reviews', desc: 'Focus performance conversations on what changes next quarter, not what went wrong last quarter.' },
+      { title: 'Build a coaching feedback loop', desc: 'Track whether coaching interventions actually move the metrics you\'re targeting.' }
+    ]
+  }
+};
+
+// State
+const answers = {};
+let questionCounter = 1;
+
+// ===== INIT =====
+function init() {
+  questionCounter = 1;
+  layers.forEach((layer, li) => {
+    const container = document.getElementById(`questions${li}`);
+    container.innerHTML = '';
+    layer.questions.forEach((q, qi) => {
+      const key = `${li}-${qi}`;
+      const num = questionCounter++;
+      container.innerHTML += `
+        <div class="question-card" id="card-${key}">
+          <div class="question-number">Question ${num}</div>
+          <div class="question-text">${q}</div>
+          <div class="rating-selector">
+            ${[1,2,3,4,5].map(r => `
+              <button class="rating-btn" data-key="${key}" data-value="${r}" onclick="rate('${key}', ${r}, ${li})" aria-label="Rate ${r}: ${ratingLabels[r-1]}">
+                ${r}
+                <span class="rating-label">${ratingLabels[r-1]}</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    });
+  });
+}
+
+// ===== RATE =====
+function rate(key, value, layerIndex) {
+  answers[key] = value;
+
+  // Update button states
+  document.querySelectorAll(`[data-key="${key}"]`).forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.value) === value);
+  });
+
+  // Mark card as answered
+  document.getElementById(`card-${key}`).classList.add('answered');
+
+  // Check if layer is complete
+  const layer = layers[layerIndex];
+  let allAnswered = true;
+  let score = 0;
+  for (let qi = 0; qi < layer.questions.length; qi++) {
+    const k = `${layerIndex}-${qi}`;
+    if (answers[k] === undefined) {
+      allAnswered = false;
+    } else {
+      score += answers[k];
+    }
+  }
+
+  if (allAnswered) {
+    showLayerResult(layerIndex, score);
+    document.getElementById(`next${layerIndex}`).disabled = false;
+  }
+}
+
+// ===== SHOW LAYER RESULT =====
+function showLayerResult(layerIndex, score) {
+  const layer = layers[layerIndex];
+  const resultEl = document.getElementById(`result${layerIndex}`);
+  resultEl.classList.add('visible');
+
+  // Animate score ring
+  const circumference = 2 * Math.PI * 52;
+  const pct = score / layer.max;
+  const offset = circumference * (1 - pct);
+  const ring = resultEl.querySelector('.ring-fill');
+
+  let strokeColor;
+  if (pct >= 0.8) strokeColor = '#00C29F';
+  else if (pct >= 0.53) strokeColor = '#FFF27F';
+  else strokeColor = '#FF9B82';
+
+  ring.style.stroke = strokeColor;
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+
+  // Score text
+  document.getElementById(`scoreText${layerIndex}`).textContent = score;
+  document.getElementById(`scoreText${layerIndex}`).style.color = strokeColor;
+
+  // Diagnosis
+  const diagContainer = document.getElementById(`diagnosis${layerIndex}`);
+  const diag = layer.diagnosis.find(d => score >= d.min);
+  diagContainer.innerHTML = `
+    <div class="diagnosis-card ${diag.color}">
+      <div class="diagnosis-label">${diag.label}</div>
+      <div class="diagnosis-text">${diag.text}</div>
+    </div>
+  `;
+
+  // Scroll to result
+  setTimeout(() => {
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 200);
+}
+
+// ===== NAVIGATION =====
+function nextLayer(current) {
+  const next = current + 1;
+  document.getElementById(`layer${current}`).classList.remove('active');
+  document.getElementById(`layer${next}`).classList.add('active');
+
+  // Update progress
+  const steps = document.querySelectorAll('.progress-step');
+  steps[current].classList.remove('active');
+  steps[current].classList.add('completed');
+  steps[next].classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevLayer(current) {
+  const prev = current - 1;
+  document.getElementById(`layer${current}`).classList.remove('active');
+  document.getElementById(`layer${prev}`).classList.add('active');
+
+  const steps = document.querySelectorAll('.progress-step');
+  steps[current].classList.remove('active');
+  steps[prev].classList.remove('completed');
+  steps[prev].classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== RESULTS =====
+function showResults() {
+  // Hide layer 3
+  document.getElementById('layer3').classList.remove('active');
+
+  // Update progress
+  const steps = document.querySelectorAll('.progress-step');
+  steps[3].classList.remove('active');
+  steps[3].classList.add('completed');
+  steps[4].classList.add('active');
+
+  // Calculate scores
+  const layerScores = layers.map((layer, li) => {
+    let score = 0;
+    for (let qi = 0; qi < layer.questions.length; qi++) {
+      score += answers[`${li}-${qi}`] || 0;
+    }
+    return score;
+  });
+
+  const totalScore = layerScores.reduce((a, b) => a + b, 0);
+
+  // Show results section
+  const resultsEl = document.getElementById('resultsSection');
+  resultsEl.classList.add('active');
+
+  // Animate total score
+  const totalNum = document.getElementById('totalScoreNum');
+  animateNumber(totalNum, totalScore);
+
+  // Total bar
+  const pct = (totalScore / 125) * 100;
+  let barColor;
+  if (totalScore >= 100) barColor = '#00C29F';
+  else if (totalScore >= 75) barColor = '#FFF27F';
+  else if (totalScore >= 50) barColor = '#FF9B82';
+  else barColor = '#FF9B82';
+
+  totalNum.style.color = barColor;
+
+  const barFill = document.getElementById('totalBarFill');
+  barFill.style.background = barColor;
+  setTimeout(() => { barFill.style.width = pct + '%'; }, 200);
+
+  // Interpretation
+  const interp = document.getElementById('totalInterpretation');
+  if (totalScore >= 100) {
+    interp.textContent = 'Architecture is solid. Focus on incremental improvements in your lowest-scoring layer.';
+  } else if (totalScore >= 75) {
+    interp.textContent = 'One or two layers are significantly broken. Identify the lowest-scoring layer and start there.';
+  } else if (totalScore >= 50) {
+    interp.textContent = 'Multiple layers are failing. You\'re likely treating symptoms. Start with Layer 1 — everything else depends on it.';
+  } else {
+    interp.textContent = 'The revenue process is fundamentally broken. The priority is stabilization: define your pipeline stages, establish basic CRM hygiene, and stop the bleeding before building anything on top.';
+  }
+
+  // Layer summary cards
+  const grid = document.getElementById('layerSummaryGrid');
+  grid.innerHTML = '';
+  let lowestIdx = 0;
+  let lowestPct = 1;
+  layerScores.forEach((score, i) => {
+    const pctScore = score / layers[i].max;
+    if (pctScore < lowestPct) { lowestPct = pctScore; lowestIdx = i; }
+    let color;
+    if (pctScore >= 0.8) color = '#00C29F';
+    else if (pctScore >= 0.53) color = '#FFF27F';
+    else color = '#FF9B82';
+
+    grid.innerHTML += `
+      <div class="layer-summary-card">
+        <div class="layer-name">Layer ${i + 1}: ${layers[i].shortName}</div>
+        <div class="layer-score" style="color: ${color}">${score}</div>
+        <div class="layer-max">out of ${layers[i].max}</div>
+        <div class="mini-bar"><div class="mini-bar-fill" style="width: ${pctScore * 100}%; background: ${color}"></div></div>
+      </div>
+    `;
+  });
+
+  // Recommended next steps
+  const lowestLayer = layers[lowestIdx];
+  const lowestScore = layerScores[lowestIdx];
+  const lowestLayerPct = lowestScore / lowestLayer.max;
+  let severity;
+  if (lowestIdx === 3) {
+    severity = lowestLayerPct >= 0.8 ? 'green' : lowestLayerPct >= 0.51 ? 'yellow' : 'red';
+  } else {
+    severity = lowestLayerPct >= 0.8 ? 'green' : lowestLayerPct >= 0.53 ? 'yellow' : 'red';
+  }
+
+  document.getElementById('priorityDesc').innerHTML =
+    `Your lowest-scoring layer is <strong>Layer ${lowestIdx + 1}: ${lowestLayer.name}</strong> (${lowestScore}/${lowestLayer.max}).<br><br>Here's where to focus:`;
+
+  const stepsContainer = document.getElementById('nextStepsList');
+  const recSteps = nextSteps[lowestIdx][severity];
+  stepsContainer.innerHTML = recSteps.map(s => `
+    <div class="next-step-item">
+      <div class="step-icon">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="step-content">
+        <h4>${s.title}</h4>
+        <p>${s.desc}</p>
+      </div>
+    </div>
+  `).join('');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function animateNumber(el, target) {
+  let current = 0;
+  const duration = 800;
+  const step = target / (duration / 16);
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    el.textContent = Math.round(current);
+  }, 16);
+}
+
+// ===== RESTART =====
+function restartAudit() {
+  // Clear answers
+  Object.keys(answers).forEach(k => delete answers[k]);
+
+  // Reset UI
+  document.getElementById('resultsSection').classList.remove('active');
+  document.querySelectorAll('.layer-section').forEach(el => el.classList.remove('active'));
+  document.getElementById('layer0').classList.add('active');
+
+  document.querySelectorAll('.progress-step').forEach((el, i) => {
+    el.classList.remove('active', 'completed');
+    if (i === 0) el.classList.add('active');
+  });
+
+  document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+  document.querySelectorAll('.question-card').forEach(card => card.classList.remove('answered'));
+  document.querySelectorAll('.layer-result').forEach(el => {
+    el.classList.remove('visible');
+    const ring = el.querySelector('.ring-fill');
+    if (ring) ring.style.strokeDashoffset = '326.73';
+  });
+
+  [0,1,2,3].forEach(i => {
+    document.getElementById(`next${i}`).disabled = true;
+    document.getElementById(`scoreText${i}`).textContent = '0';
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== PDF GENERATION =====
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, H = 297;
+  const margin = 20;
+  const contentW = W - margin * 2;
+  let y = margin;
+
+  // Colors
+  const midnight = [1, 46, 52];
+  const green = [0, 194, 159];
+  const offWhite = [242, 246, 247];
+  const cardBg = [15, 60, 68]; // translucent-like on midnight
+  const salmon = [255, 155, 130];
+  const corn = [255, 242, 127];
+  const neutral50 = [108, 135, 139];
+  const cardBorder = [40, 85, 92];
+
+  function ensureSpace(needed) {
+    if (y + needed > H - 18) {
+      doc.addPage();
+      doc.setFillColor(...midnight);
+      doc.rect(0, 0, W, H, 'F');
+      y = margin;
+    }
+  }
+
+  // Background
+  doc.setFillColor(...midnight);
+  doc.rect(0, 0, W, H, 'F');
+
+  // Header - Chief SVG logo rendered to canvas then embedded
+  const logoSvg = document.querySelector('.logo svg');
+  if (logoSvg) {
+    const svgData = new XMLSerializer().serializeToString(logoSvg);
+    const canvas = document.createElement('canvas');
+    canvas.width = 480;
+    canvas.height = 136;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0, 480, 136);
+      URL.revokeObjectURL(url);
+      const logoDataUrl = canvas.toDataURL('image/png');
+      doc.addImage(logoDataUrl, 'PNG', margin, y - 2, 36, 10.2);
+      finishPDF();
+    };
+    img.src = url;
+  } else {
+    // Fallback text logo
+    doc.setTextColor(...green);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text('Chief', margin, y + 4);
+    finishPDF();
+  }
+
+  function finishPDF() {
+  doc.setTextColor(...neutral50);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.text('Revenue Process Audit', margin + 39, y + 4);
+
+  y += 16;
+
+  // Title
+  doc.setTextColor(...offWhite);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(24);
+  doc.text('Revenue Process Audit Results', margin, y);
+  y += 10;
+
+  // Date
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...neutral50);
+  doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), margin, y);
+  y += 12;
+
+  // Divider
+  doc.setDrawColor(...green);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, W - margin, y);
+  y += 10;
+
+  // Calculate scores
+  const layerScores = layers.map((layer, li) => {
+    let score = 0;
+    for (let qi = 0; qi < layer.questions.length; qi++) {
+      score += answers[`${li}-${qi}`] || 0;
+    }
+    return score;
+  });
+  const totalScore = layerScores.reduce((a, b) => a + b, 0);
+
+  // Total Score label
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(...offWhite);
+  doc.text('Total Score', margin, y);
+  y += 12;
+
+  // Big score number FIRST
+  const barPct = totalScore / 125;
+  let barCol = green;
+  if (totalScore < 75) barCol = salmon;
+  else if (totalScore < 100) barCol = corn;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(36);
+  doc.setTextColor(...barCol);
+  doc.text(`${totalScore}`, margin, y);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(14);
+  doc.setTextColor(...neutral50);
+  const scoreW = doc.getTextWidth(`${totalScore}`);
+  doc.setFontSize(36);
+  const scoreWActual = doc.getTextWidth(`${totalScore}`);
+  doc.setFontSize(14);
+  doc.text(' / 125', margin + scoreWActual + 2, y);
+  y += 8;
+
+  // Score bar BELOW the number
+  doc.setFillColor(...cardBorder);
+  doc.roundedRect(margin, y, contentW, 5, 2.5, 2.5, 'F');
+  doc.setFillColor(...barCol);
+  if (contentW * barPct > 5) {
+    doc.roundedRect(margin, y, contentW * barPct, 5, 2.5, 2.5, 'F');
+  }
+  y += 10;
+
+  // Interpretation
+  let interpretation = '';
+  if (totalScore >= 100) interpretation = 'Architecture is solid. Focus on incremental improvements in your lowest-scoring layer.';
+  else if (totalScore >= 75) interpretation = 'One or two layers are significantly broken. Identify the lowest-scoring layer and start there.';
+  else if (totalScore >= 50) interpretation = 'Multiple layers are failing. Start with Layer 1 — everything else depends on it.';
+  else interpretation = 'The revenue process is fundamentally broken. Priority is stabilization: define pipeline stages, establish CRM hygiene, and stop the bleeding.';
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...offWhite);
+  const interpLines = doc.splitTextToSize(interpretation, contentW);
+  doc.text(interpLines, margin, y);
+  y += interpLines.length * 4.5 + 10;
+
+  // Layer Scores
+  doc.setDrawColor(...cardBorder);
+  doc.setLineWidth(0.3);
+  doc.line(margin, y, W - margin, y);
+  y += 8;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(...offWhite);
+  doc.text('Layer Scores', margin, y);
+  y += 10;
+
+  layers.forEach((layer, i) => {
+    const score = layerScores[i];
+    const pctScore = score / layer.max;
+    let color = green;
+    if (pctScore < 0.53) color = salmon;
+    else if (pctScore < 0.8) color = corn;
+
+    // Card background
+    doc.setFillColor(...cardBg);
+    doc.roundedRect(margin, y - 2, contentW, 22, 3, 3, 'F');
+    doc.setDrawColor(...cardBorder);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(margin, y - 2, contentW, 22, 3, 3, 'S');
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(...neutral50);
+    doc.text(`LAYER ${i + 1}`, margin + 6, y + 5);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(...offWhite);
+    doc.text(layer.name, margin + 26, y + 5);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(...color);
+    doc.text(`${score}`, W - margin - 24, y + 6);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(...neutral50);
+    doc.text(`/${layer.max}`, W - margin - 10, y + 6);
+
+    // Mini bar
+    doc.setFillColor(...cardBorder);
+    doc.roundedRect(margin + 6, y + 12, contentW - 12, 3, 1.5, 1.5, 'F');
+    doc.setFillColor(...color);
+    if ((contentW - 12) * pctScore > 3) {
+      doc.roundedRect(margin + 6, y + 12, (contentW - 12) * pctScore, 3, 1.5, 1.5, 'F');
+    }
+
+    y += 26;
+  });
+
+  y += 4;
+
+  // Question-by-question scores — always start on page 2
+  doc.addPage();
+  doc.setFillColor(...midnight);
+  doc.rect(0, 0, W, H, 'F');
+  y = margin;
+  doc.setDrawColor(...cardBorder);
+  doc.setLineWidth(0.3);
+  doc.line(margin, y, W - margin, y);
+  y += 8;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(...offWhite);
+  doc.text('Question-by-Question Scores', margin, y);
+  y += 8;
+
+  let qNum = 1;
+  layers.forEach((layer, li) => {
+    ensureSpace(14);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...green);
+    doc.text(`Layer ${li + 1}: ${layer.name}`, margin, y);
+    y += 6;
+
+    layer.questions.forEach((q, qi) => {
+      ensureSpace(12);
+
+      const score = answers[`${li}-${qi}`] || 0;
+      const truncated = q.length > 95 ? q.substring(0, 95) + '...' : q;
+
+      // Question number and text
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...neutral50);
+      doc.text(`${qNum}.`, margin, y);
+
+      doc.setTextColor(...offWhite);
+      const qLines = doc.splitTextToSize(truncated, contentW - 22);
+      doc.text(qLines, margin + 8, y);
+
+      // Score circle - tighter fit
+      let pillCol = green;
+      if (score <= 2) pillCol = salmon;
+      else if (score <= 3) pillCol = corn;
+
+      const pillX = W - margin - 7;
+      const pillY = y - 1;
+      doc.setFillColor(...pillCol);
+      doc.circle(pillX, pillY, 3, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(...midnight);
+      const scoreStr = `${score}`;
+      const scoreStrW = doc.getTextWidth(scoreStr);
+      doc.text(scoreStr, pillX - scoreStrW / 2, pillY + 1);
+
+      y += qLines.length * 4 + 3;
+      qNum++;
+    });
+
+    y += 4;
+  });
+
+  // Recommended Next Steps section — always start on a fresh page
+  doc.addPage();
+  doc.setFillColor(...midnight);
+  doc.rect(0, 0, W, H, 'F');
+  y = margin;
+
+  doc.setDrawColor(...cardBorder);
+  doc.setLineWidth(0.3);
+  doc.line(margin, y, W - margin, y);
+  y += 8;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(...offWhite);
+  doc.text('Recommended Next Steps', margin, y);
+  y += 4;
+
+  // Determine lowest layer and severity (same logic as app)
+  let lowestIdx = 0;
+  let lowestPct = 1;
+  layerScores.forEach((score, i) => {
+    const p = score / layers[i].max;
+    if (p < lowestPct) { lowestPct = p; lowestIdx = i; }
+  });
+
+  let severity;
+  if (lowestIdx === 3) {
+    severity = lowestPct >= 0.8 ? 'green' : lowestPct >= 0.51 ? 'yellow' : 'red';
+  } else {
+    severity = lowestPct >= 0.8 ? 'green' : lowestPct >= 0.53 ? 'yellow' : 'red';
+  }
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...neutral50);
+  doc.text(`Focus area: Layer ${lowestIdx + 1} — ${layers[lowestIdx].name} (${layerScores[lowestIdx]}/${layers[lowestIdx].max})`, margin, y + 4);
+  y += 10;
+
+  const pdfSteps = nextSteps[lowestIdx][severity];
+  pdfSteps.forEach((step, si) => {
+    // Step number circle
+    doc.setFillColor(...green);
+    doc.circle(margin + 3, y + 1, 3, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(...midnight);
+    const numStr = `${si + 1}`;
+    doc.text(numStr, margin + 3 - doc.getTextWidth(numStr) / 2, y + 2);
+
+    // Title
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...offWhite);
+    doc.text(step.title, margin + 10, y + 2);
+    y += 5;
+
+    // Description
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(...neutral50);
+    const descLines = doc.splitTextToSize(step.desc, contentW - 10);
+    doc.text(descLines, margin + 10, y + 1);
+    y += descLines.length * 4 + 5;
+  });
+
+  // Footer on all pages
+  const lastPage = doc.getNumberOfPages();
+  for (let p = 1; p <= lastPage; p++) {
+    doc.setPage(p);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...neutral50);
+    doc.text('Chief · Revenue Process Audit · getchief.com', margin, H - 10);
+    doc.text(`Page ${p} of ${lastPage}`, W - margin - 20, H - 10);
+  }
+
+  doc.save('Chief-Revenue-Process-Audit.pdf');
+  } // end finishPDF
+}
+
+// ===== IFRAME AUTO-RESIZE =====
+// Posts the document height to the parent window so an
+// embedding page can resize the iframe to fit without scrollbars.
+function postHeight() {
+  const h = document.documentElement.scrollHeight;
+  window.parent.postMessage({ type: 'audit-resize', height: h }, '*');
+}
+// Fire on load, on resize, and whenever the DOM changes (layer transitions, results)
+window.addEventListener('load', postHeight);
+window.addEventListener('resize', postHeight);
+const _resizeObserver = new ResizeObserver(postHeight);
+_resizeObserver.observe(document.body);
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
