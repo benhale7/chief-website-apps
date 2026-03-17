@@ -38,12 +38,17 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html, body {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--chief-midnight);
   color: var(--chief-off-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 h1, h2, h3, h4 {
@@ -1431,7 +1436,7 @@ function nextLayer(current) {
   steps[current].classList.add('completed');
   steps[next].classList.add('active');
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.parent.postMessage({ type: 'audit-scroll-top' }, '*');
 }
 
 function prevLayer(current) {
@@ -1444,7 +1449,7 @@ function prevLayer(current) {
   steps[prev].classList.remove('completed');
   steps[prev].classList.add('active');
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.parent.postMessage({ type: 'audit-scroll-top' }, '*');
 }
 
 // ===== RESULTS =====
@@ -1554,7 +1559,7 @@ function showResults() {
     </div>
   `).join('');
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.parent.postMessage({ type: 'audit-scroll-top' }, '*');
 }
 
 function animateNumber(el, target) {
@@ -1602,7 +1607,7 @@ function restartAudit() {
   // Go back to intro screen
   document.getElementById('auditContent').classList.remove('visible');
   document.getElementById('introScreen').style.display = '';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.parent.postMessage({ type: 'audit-scroll-top' }, '*');
   requestAnimationFrame(postHeight);
 }
 
@@ -1964,23 +1969,25 @@ function startAudit() {
   document.getElementById('introScreen').style.display = 'none';
   const content = document.getElementById('auditContent');
   content.classList.add('visible');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Let the parent iframe know the height changed
+  // Scroll parent page to top of iframe
+  window.parent.postMessage({ type: 'audit-scroll-top' }, '*');
   requestAnimationFrame(postHeight);
 }
 
 // ===== IFRAME AUTO-RESIZE =====
-// Posts the document height to the parent window so an
-// embedding page can resize the iframe to fit without scrollbars.
+// Posts the document height to the parent so the iframe always
+// expands to fit content. With scrolling="no" on the iframe,
+// scroll events pass through to the parent page naturally.
 function postHeight() {
   const h = document.documentElement.scrollHeight;
   window.parent.postMessage({ type: 'audit-resize', height: h }, '*');
 }
-// Fire on load, on resize, and whenever the DOM changes (layer transitions, results)
+
+// Fire on load, resize, and any DOM/layout change
 window.addEventListener('load', postHeight);
 window.addEventListener('resize', postHeight);
-const _resizeObserver = new ResizeObserver(postHeight);
-_resizeObserver.observe(document.body);
+new MutationObserver(postHeight).observe(document.body, { childList: true, subtree: true, attributes: true });
+new ResizeObserver(postHeight).observe(document.body);
 
 // ===== START =====
 init();
