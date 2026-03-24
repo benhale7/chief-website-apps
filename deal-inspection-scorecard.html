@@ -439,11 +439,22 @@ let state = {
   answers: {},             // { qId: true/false }
 };
 
+/* ── IFRAME RESIZE COMMUNICATION ─────────────────────────────── */
+function notifyHeight() {
+  var h = document.documentElement.scrollHeight;
+  try { window.parent.postMessage({ type: 'audit-resize', height: h }, '*'); } catch(e){}
+}
+var _resizeObs = new ResizeObserver(function(){ notifyHeight(); });
+_resizeObs.observe(document.body);
+window.addEventListener('load', notifyHeight);
+
 /* ── NAVIGATION ──────────────────────────────────────────────── */
 function goTo(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(screenId).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  try { window.parent.postMessage({ type: 'audit-scroll-top' }, '*'); } catch(e){}
+  requestAnimationFrame(notifyHeight);
 }
 
 function startInspection() {
@@ -1359,5 +1370,6 @@ async function generatePDF() {
   });
 }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js"></script>
 </body>
 </html>
