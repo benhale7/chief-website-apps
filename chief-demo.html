@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chief — Clickable Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Lucide icons inlined for offline reliability -->
+<style>
+  :root {
+    --chief-teal-deep: #0d3b3e;
+    --chief-teal: #134e52;
+    --chief-green: #10b981;
+    --chief-green-dark: #059669;
+    --chief-green-soft: #d1fae5;
+    --chief-mint: #ecfdf5;
+    --slack-purple: #3f0e40;
+    --slack-purple-dark: #350d36;
+    --slack-text-light: #e8e8e8;
+    --slack-text-muted: #b9b9b9;
+    --slack-divider: #522653;
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --ink-muted: #64748b;
+    --ink-faint: #94a3b8;
+    --line: #e2e8f0;
+    --line-soft: #f1f5f9;
+    --paper: #ffffff;
+    --paper-tint: #f8fafc;
+    --paper-tint-2: #f1f5f9;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 20px 50px rgba(15, 23, 42, 0.12), 0 8px 20px rgba(15, 23, 42, 0.06);
+    --font-display: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%; background: transparent; font-family: var(--font-body); color: var(--ink);
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  }
+  body.standalone {
+    background: #0a1a1c; display: grid; place-items: center; padding: 24px; min-height: 100vh;
+  }
+  /* iframe-friendly: transparent background, no chrome */
+  body.embedded {
+    background: transparent; display: block; padding: 0; min-height: auto;
+  }
+  body.embedded .embed-wrapper {
+    box-shadow: none; border-radius: 0; max-width: 100%;
+  }
+  .embed-wrapper {
+    width: 100%; max-width: 1280px; margin: 0 auto; aspect-ratio: 16 / 10;
+    position: relative; border-radius: 16px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12), 0 8px 20px rgba(15, 23, 42, 0.06);
+    background: #f5f7f8;
+  }
+  .canvas {
+    position: absolute; top: 0; left: 0; width: 1440px; height: 900px;
+    transform-origin: top left;
+  }
+  h1, h2, h3, h4, h5, h6, .font-display { font-family: var(--font-display); }
+  .camera {
+    position: absolute; inset: 0; transform-origin: center center;
+    transition: transform 1400ms cubic-bezier(0.32, 0.72, 0.24, 1);
+    will-change: transform;
+  }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .screen {
+    position: absolute; inset: 0; opacity: 0; visibility: hidden; transform: translateY(8px);
+    transition: opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+                visibility 0s 360ms;
+  }
+  .screen.is-active {
+    opacity: 1; visibility: visible; transform: translateY(0);
+    transition: opacity 360ms cubic-bezier(0.22, 1, 0.36, 1),
+                transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+                visibility 0s;
+  }
+  [data-lucide] { width: 18px; height: 18px; stroke-width: 2; flex-shrink: 0; }
+  .is-inactive, button[disabled], button.is-disabled {
+    opacity: 0.45 !important; cursor: not-allowed !important; pointer-events: none !important;
+  }
+  .demo-inert { cursor: default; opacity: 0.55; }
+  .demo-inert:hover {
+    transform: none !important; box-shadow: var(--shadow-sm) !important;
+    background: var(--paper) !important; border-color: var(--line) !important;
+  }
+
+  .zoom-toggle {
+    position: absolute; bottom: 14px; right: 130px; z-index: 9999;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.25;
+    padding: 9px 13px 6px 11px; background: rgba(15, 23, 42, 0.92); color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px;
+    font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    cursor: pointer; backdrop-filter: blur(8px); box-shadow: var(--shadow-lg);
+    transition: transform 160ms ease, background 160ms ease;
+  }
+  .zoom-toggle:hover { transform: translateY(-1px); background: rgba(15, 23, 42, 1); }
+  .zoom-toggle [data-lucide], .zoom-toggle svg { width: 13px; height: 13px; }
+
+  .reset-demo {
+    position: absolute; bottom: 14px; right: 14px; z-index: 9999;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.25;
+    padding: 9px 13px 6px 11px; background: rgba(15, 23, 42, 0.92); color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px;
+    font-family: var(--font-body); font-size: 12px; font-weight: 500;
+    cursor: pointer; backdrop-filter: blur(8px); box-shadow: var(--shadow-lg);
+    transition: transform 160ms ease, background 160ms ease;
+  }
+  .reset-demo:hover { transform: translateY(-1px); background: rgba(15, 23, 42, 1); }
+  .reset-demo [data-lucide] { width: 13px; height: 13px; }
+  @keyframes pulse {
+    0%, 100% { opacity: 0; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.04); }
+  }
+
+  /* SLACK */
+  .slack { display: grid; grid-template-columns: 64px 280px 1fr; height: 100%; background: var(--paper); font-size: 15px; }
+  .slack-rail { background: var(--slack-purple-dark); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 14px; }
+  .slack-workspace { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(135deg, #10b981, #0d3b3e); display: grid; place-items: center; color: white; font-weight: 700; font-size: 14px; box-shadow: 0 0 0 2px rgba(255,255,255,0.08); }
+  .slack-rail-icons { display: flex; flex-direction: column; gap: 18px; margin-top: 8px; }
+  .slack-rail-icon { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; color: var(--slack-text-muted); cursor: default; }
+  .slack-rail-icon [data-lucide] { width: 20px; height: 20px; }
+  .slack-sidebar { background: var(--slack-purple); color: var(--slack-text-light); padding: 16px 0 0; overflow-y: auto; }
+  .slack-workspace-name { padding: 0 16px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--slack-divider); margin-bottom: 10px; }
+  .slack-workspace-name h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 4px; color: white; }
+  .slack-workspace-name h2 [data-lucide] { width: 12px; height: 12px; }
+  .slack-icon-cluster { display: flex; gap: 6px; }
+  .slack-icon-cluster button { width: 28px; height: 28px; background: transparent; border: none; cursor: default; color: var(--slack-text-light); border-radius: 4px; display: grid; place-items: center; }
+  .slack-icon-cluster button [data-lucide] { width: 15px; height: 15px; }
+  .slack-nav { padding: 0 8px; }
+  .slack-nav-item { display: flex; align-items: center; gap: 10px; padding: 6px 11px; border-radius: 6px; color: var(--slack-text-light); font-size: 15px; cursor: default; }
+  .slack-nav-item.is-active { background: var(--chief-green); color: #fff; font-weight: 600; }
+  .slack-nav-item [data-lucide] { width: 15px; height: 15px; opacity: 0.85; }
+  .slack-section { margin-top: 18px; padding: 0 10px; }
+  .slack-section-header { font-size: 13px; color: var(--slack-text-muted); padding: 4px 6px; display: flex; align-items: center; gap: 6px; }
+  .slack-section-header [data-lucide] { width: 11px; height: 11px; }
+  .slack-channel { padding: 5px 14px; font-size: 15px; color: var(--slack-text-light); cursor: default; }
+  .slack-channel::before { content: '# '; opacity: 0.7; }
+  .slack-main { display: flex; flex-direction: column; background: var(--paper); overflow: hidden; }
+  .slack-header { padding: 14px 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 11px; }
+  .slack-header-app-icon { width: 26px; height: 26px; border-radius: 6px; background: white; border: 1px solid var(--line); display: grid; place-items: center; padding: 3px; }
+  .slack-header-app-icon [data-lucide] { width: 14px; height: 14px; color: white; }
+  .slack-header h1 { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+  .slack-tabs { padding: 0 24px; border-bottom: 1px solid var(--line); display: flex; gap: 22px; }
+  .slack-tab { padding: 12px 0; font-size: 15px; color: var(--ink-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: default; }
+  .slack-tab.is-active { color: var(--ink); font-weight: 600; border-bottom-color: var(--ink); }
+  .slack-messages { flex: 1; overflow-y: auto; padding: 20px 24px 14px; }
+  .slack-date-pill { display: flex; align-items: center; margin: 14px 0 18px; color: var(--ink-muted); }
+  .slack-date-pill::before, .slack-date-pill::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .slack-date-pill span { margin: 0 14px; padding: 4px 14px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--paper); }
+  .slack-message { display: grid; grid-template-columns: 44px 1fr; gap: 11px; padding: 8px; border-radius: 6px; margin-bottom: 6px; }
+  .slack-avatar { width: 40px; height: 40px; border-radius: 6px; background: white; border: 1px solid var(--line); display: grid; place-items: center; padding: 5px; }
+  .slack-avatar [data-lucide] { width: 20px; height: 20px; color: white; }
+  .slack-msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 3px; }
+  .slack-msg-name { font-weight: 700; color: var(--ink); font-size: 16px; }
+  .slack-msg-app { background: var(--paper-tint-2); color: var(--ink-soft); font-size: 10px; padding: 1px 5px; border-radius: 3px; font-weight: 600; letter-spacing: 0.02em; }
+  .slack-msg-time { font-size: 13px; color: var(--ink-muted); }
+  .slack-msg-title { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+  .slack-msg-body { font-size: 15px; color: var(--ink-soft); margin-bottom: 11px; }
+  .slack-msg-button { display: inline-flex; align-items: center; justify-content: center; line-height: 1.25; padding: 10px 18px 8px; background: var(--paper); border: 1px solid var(--line); border-radius: 6px; color: var(--ink); font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.04); transition: all 140ms ease; }
+  .slack-msg-button.is-primary { border-color: var(--chief-green); color: var(--chief-green-dark); background: var(--chief-mint); position: relative; }
+  .slack-msg-button.is-primary:hover { background: var(--chief-green-soft); transform: translateY(-1px); box-shadow: 0 4px 8px rgba(16, 185, 129, 0.15); }
+  .slack-msg-button.is-primary::after { content: ''; position: absolute; inset: -3px; border-radius: 8px; border: 2px solid var(--chief-green); opacity: 0; animation: pulse 2.2s ease-in-out infinite; pointer-events: none; }
+  .slack-composer { padding: 0 24px 22px; }
+  .slack-composer-box { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .slack-composer-toolbar { padding: 6px 10px; border-bottom: 1px solid var(--line-soft); color: var(--ink-muted); display: flex; gap: 14px; align-items: center; }
+  .slack-composer-toolbar [data-lucide] { width: 14px; height: 14px; }
+  .slack-composer-input { padding: 12px 14px; color: var(--ink-muted); font-size: 14px; }
+
+  /* CHIEF APP */
+  .chief-app { display: grid; grid-template-columns: 68px 1fr 520px; height: 100%; background: #f5f7f8; }
+  .chief-rail { background: var(--chief-teal-deep); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 6px; }
+  .chief-rail-logo { width: 40px; height: 40px; border-radius: 10px; background: white; display: grid; place-items: center; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); padding: 6px; }
+  .chief-rail-logo [data-lucide] { width: 22px; height: 22px; color: white; }
+  .chief-rail-icon { width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; color: rgba(255, 255, 255, 0.55); cursor: default; }
+  .chief-rail-icon.is-active { background: rgba(255, 255, 255, 0.1); color: white; }
+  .chief-rail-icon [data-lucide] { width: 20px; height: 20px; }
+  .chief-rail-spacer { flex: 1; }
+  .chief-rail-user { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #f97316); display: grid; place-items: center; color: white; font-weight: 700; font-size: 13px; border: 2px solid rgba(255,255,255,0.15); }
+  .chief-meetings { padding: 26px 32px; overflow-y: auto; }
+  .chief-meetings-header { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .chief-meetings-header h1 { font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+  .chief-search { flex: 1; max-width: 360px; position: relative; }
+  .chief-search input { width: 100%; padding: 9px 14px 9px 36px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; font-family: var(--font-body); font-size: 14px; color: var(--ink); outline: none; }
+  .chief-search [data-lucide] { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--ink-muted); }
+  .chief-header-button { padding: 8px 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--ink); cursor: default; display: inline-flex; align-items: center; gap: 6px; }
+  .chief-header-button [data-lucide] { width: 14px; height: 14px; }
+  .chief-tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--paper); border-radius: 10px; padding: 4px; margin-bottom: 22px; border: 1px solid var(--line); }
+  .chief-tab { padding: 10px; text-align: center; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--ink-muted); cursor: default; }
+  .chief-tab.is-active { background: #f5f7f8; color: var(--ink); box-shadow: var(--shadow-sm); }
+  .chief-tab .count { margin-left: 6px; color: var(--ink-faint); font-weight: 600; }
+  .chief-day-label { font-family: var(--font-display); font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 12px; }
+  .chief-meeting-card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; }
+  .chief-meeting-card.is-selected { background: #eef2ff; border-color: #c7d2fe; }
+  .chief-meeting-date { width: 56px; height: 56px; background: #eef2ff; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #4338ca; }
+  .chief-meeting-date .month { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; }
+  .chief-meeting-date .day { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+  .chief-meeting-title { font-size: 15px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .chief-meeting-title [data-lucide] { width: 14px; height: 14px; color: var(--ink-muted); }
+  .chief-meeting-meta { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-muted); margin-bottom: 6px; flex-wrap: wrap; }
+  .chief-meeting-meta [data-lucide] { width: 12px; height: 12px; }
+  .chief-pill { padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 500; background: var(--paper-tint-2); color: var(--ink-soft); }
+  .chief-pill.is-time { background: var(--chief-mint); color: var(--chief-green-dark); }
+  .chief-meeting-avatars { display: flex; align-items: center; }
+  .chief-meeting-avatars .av { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--paper); margin-left: -6px; background: linear-gradient(135deg, #94a3b8, #475569); display: grid; place-items: center; color: white; font-size: 9px; font-weight: 700; }
+  .chief-meeting-avatars .av:first-child { margin-left: 0; }
+  .chief-meeting-avatars .av:nth-child(2) { background: linear-gradient(135deg, #f472b6, #be185d); }
+  .chief-meeting-avatars .av:nth-child(3) { background: linear-gradient(135deg, #60a5fa, #1d4ed8); }
+  .chief-meeting-actions { display: flex; gap: 6px; }
+  .chief-action-btn { padding: 8px 12px 6px; border-radius: 8px; font-family: var(--font-body); font-size: 12px; font-weight: 600; cursor: default; display: inline-flex; align-items: center; justify-content: center; line-height: 1.25; gap: 6px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+  .chief-action-btn.is-primary { background: var(--chief-green); color: white; border-color: var(--chief-green); }
+  .chief-action-btn [data-lucide] { width: 12px; height: 12px; }
+  .chief-detail { background: var(--paper); border-left: 1px solid var(--line); overflow-y: auto; display: flex; flex-direction: column; }
+  .chief-detail-header { padding: 20px 22px 14px; border-bottom: 1px solid var(--line-soft); }
+  .chief-detail-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink-muted); margin-bottom: 8px; }
+  .chief-detail-meta [data-lucide] { width: 12px; height: 12px; }
+  .chief-detail h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--ink); line-height: 1.3; margin-bottom: 10px; }
+  .chief-detail-attendees { display: flex; align-items: center; gap: 8px; }
+  .chief-detail-attendees .av-row { display: flex; }
+  .chief-detail-attendees .av { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--paper); margin-left: -6px; display: grid; place-items: center; color: white; font-size: 10px; font-weight: 700; }
+  .chief-detail-attendees .av:first-child { margin-left: 0; background: linear-gradient(135deg, #94a3b8, #475569); }
+  .chief-detail-attendees .av:nth-child(2) { background: linear-gradient(135deg, #f472b6, #be185d); }
+  .chief-detail-attendees .av:nth-child(3) { background: linear-gradient(135deg, #60a5fa, #1d4ed8); }
+  .chief-detail-attendees span { font-size: 12px; color: var(--ink-soft); }
+  .chief-detail-tabs { display: flex; padding: 8px 16px 0; border-bottom: 1px solid var(--line-soft); background: #fafbfc; }
+  .chief-detail-tab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--ink-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; cursor: default; }
+  .chief-detail-tab [data-lucide] { width: 13px; height: 13px; }
+  .chief-detail-tab.is-active { color: var(--ink); border-bottom-color: var(--ink); }
+  .chief-detail-body { padding: 18px 22px; flex: 1; }
+  .chief-detail-section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .chief-detail-section-title h3 { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .chief-detail-section-title h3 [data-lucide] { width: 14px; height: 14px; }
+  .chief-detail-section-title .count { font-size: 12px; color: var(--ink-muted); font-weight: 600; }
+  .chief-action-item { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 10px; background: var(--paper); }
+  .chief-action-row { display: grid; grid-template-columns: 18px 1fr; gap: 10px; align-items: start; margin-bottom: 10px; }
+  .chief-action-checkbox { width: 16px; height: 16px; border: 1.5px solid #cbd5e1; border-radius: 50%; margin-top: 2px; }
+  .chief-action-text { font-size: 13px; color: var(--ink); line-height: 1.45; }
+  .chief-action-owner { display: flex; align-items: center; gap: 6px; margin: 4px 0 10px 28px; font-size: 11px; color: var(--ink-muted); }
+  .chief-action-owner [data-lucide] { width: 11px; height: 11px; }
+  .chief-execute-btn { margin-left: 28px; padding: 8px 14px 6px; line-height: 1.25; justify-content: center; background: var(--paper); border: 1px solid var(--chief-green); border-radius: 6px; color: var(--chief-green-dark); font-family: var(--font-body); font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 140ms ease; position: relative; }
+  .chief-execute-btn::after { content: ''; position: absolute; inset: -3px; border-radius: 8px; border: 2px solid var(--chief-green); opacity: 0; animation: pulse 2.2s ease-in-out infinite; pointer-events: none; }
+  .chief-execute-btn:hover { background: var(--chief-mint); transform: translateY(-1px); }
+  .chief-execute-btn [data-lucide] { width: 12px; height: 12px; }
+
+  /* DRAFT */
+  .draft-screen { display: grid; grid-template-columns: 68px 1fr; height: 100%; background: #f5f7f8; }
+  .draft-canvas { overflow-y: auto; padding: 18px 48px 32px; background: linear-gradient(180deg, #f5f7f8 0%, #eef2f4 100%); }
+  .draft-back { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: none; color: var(--ink-muted); font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; padding: 6px 0; margin-bottom: 18px; }
+  .draft-back [data-lucide] { width: 14px; height: 14px; }
+  .draft-back { margin-bottom: 10px !important; }
+  .draft-back:hover { color: var(--ink); }
+  .draft-heading { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+  .draft-heading-icon { width: 36px; height: 36px; border-radius: 10px; background: white; border: 1px solid #a7f3d0; display: grid; place-items: center; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15); flex-shrink: 0; padding: 6px; }
+  .draft-heading-icon [data-lucide] { width: 22px; height: 22px; color: white; }
+  .draft-heading h1 { font-family: var(--font-display); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin-bottom: 2px; line-height: 1.15; }
+  .draft-heading p { font-size: 14px; color: var(--ink-muted); }
+  .draft-thread { max-width: 780px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .draft-bubble { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 14px 18px; box-shadow: var(--shadow); animation: bubbleIn 420ms cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes bubbleIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .draft-bubble.is-system { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; }
+  .draft-bubble-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--chief-green-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .draft-bubble-label [data-lucide] { width: 12px; height: 12px; }
+  .draft-bubble p { font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+  .draft-email { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); animation: bubbleIn 480ms cubic-bezier(0.22, 1, 0.36, 1) 80ms backwards; }
+  .draft-email-head { padding: 16px 20px; border-bottom: 1px solid var(--line-soft); background: var(--paper-tint); }
+  .draft-email-row { display: grid; grid-template-columns: 64px 1fr; padding: 4px 0; font-size: 13px; align-items: center; }
+  .draft-email-row .label { color: var(--ink-muted); font-weight: 500; }
+  .draft-email-row .value { color: var(--ink); }
+  .draft-email-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--paper-tint-2); border-radius: 999px; padding: 3px 10px 3px 4px; margin-right: 6px; font-size: 12px; }
+  .draft-email-chip .chip-av { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; color: white; font-size: 9px; font-weight: 700; }
+  .draft-email-chip:nth-of-type(1) .chip-av { background: linear-gradient(135deg, #f472b6, #be185d); }
+  .draft-email-chip:nth-of-type(2) .chip-av { background: linear-gradient(135deg, #60a5fa, #1d4ed8); }
+  .draft-email-subject { padding: 14px 20px; font-size: 16px; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--line-soft); font-family: var(--font-display); }
+  .draft-email-body { padding: 14px 20px; font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+  .draft-email-body p { margin-bottom: 10px; }
+  .draft-email-body .agenda { margin: 10px 0; padding: 12px 14px; background: var(--paper-tint); border-left: 3px solid var(--chief-green); border-radius: 4px; }
+  .draft-email-body .agenda-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); margin-bottom: 8px; font-family: var(--font-display); }
+  .draft-email-body .agenda ol { padding-left: 18px; font-size: 13px; }
+  .draft-email-body .agenda li { padding: 3px 0; }
+  .draft-email-body .agenda li b { color: var(--ink); }
+  .draft-slack { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); animation: bubbleIn 480ms cubic-bezier(0.22, 1, 0.36, 1) 80ms backwards; }
+  .draft-slack-head { padding: 12px 16px; background: var(--slack-purple); color: white; display: flex; align-items: center; gap: 10px; }
+  .draft-slack-head [data-lucide] { width: 16px; height: 16px; }
+  .draft-slack-head .channel { font-size: 14px; font-weight: 700; font-family: var(--font-display); }
+  .draft-slack-head .channel-meta { font-size: 12px; opacity: 0.7; margin-left: auto; }
+  .draft-slack-body { padding: 18px 20px; }
+  .draft-slack-from { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .draft-slack-from .av { width: 32px; height: 32px; border-radius: 6px; background: white; border: 1px solid var(--line); display: grid; place-items: center; padding: 4px; }
+  .draft-slack-from .av [data-lucide] { width: 16px; height: 16px; color: white; }
+  .draft-slack-from .name { font-weight: 700; color: var(--ink); font-size: 14px; display: flex; align-items: center; gap: 6px; }
+  .draft-slack-from .name .badge { background: var(--paper-tint-2); color: var(--ink-soft); font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; }
+  .draft-slack-from .time { font-size: 12px; color: var(--ink-muted); }
+  .draft-slack-message { font-size: 14px; color: var(--ink-soft); line-height: 1.6; white-space: pre-wrap; }
+  .draft-actions { display: flex; gap: 10px; margin-top: 4px; animation: bubbleIn 480ms cubic-bezier(0.22, 1, 0.36, 1) 160ms backwards; }
+  .draft-action-btn { padding: 11px 20px 9px; border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; line-height: 1.25; gap: 7px; border: 1px solid var(--line); background: var(--paper); color: var(--ink-muted); transition: all 160ms ease; }
+  .draft-action-btn [data-lucide] { width: 13px; height: 13px; }
+  .draft-action-btn.is-approve { background: var(--chief-green); color: white; border-color: var(--chief-green); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); position: relative; }
+  .draft-action-btn.is-approve::after { content: ''; position: absolute; inset: -3px; border-radius: 11px; border: 2px solid var(--chief-green); opacity: 0; animation: pulse 2.2s ease-in-out infinite; pointer-events: none; }
+  .draft-action-btn.is-approve:hover { background: var(--chief-green-dark); transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35); }
+  .draft-sent { margin-top: 18px; padding: 18px 22px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #6ee7b7; border-radius: 14px; display: flex; align-items: center; gap: 14px; box-shadow: 0 12px 30px rgba(16, 185, 129, 0.15); animation: sentIn 460ms cubic-bezier(0.22, 1, 0.36, 1); max-width: 780px; }
+  @keyframes sentIn { from { opacity: 0; transform: scale(0.96) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .draft-sent-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--chief-green); display: grid; place-items: center; flex-shrink: 0; }
+  .draft-sent-icon [data-lucide] { width: 18px; height: 18px; color: white; stroke-width: 3; }
+  .draft-sent-text strong { display: block; font-size: 15px; color: var(--chief-green-dark); margin-bottom: 2px; font-family: var(--font-display); }
+  .draft-sent-text span { font-size: 13px; color: var(--ink-soft); }
+
+  /* DASH */
+  .dash-screen { display: grid; grid-template-columns: 68px 1fr; height: 100%; background: #f5f7f8; }
+  .dash-main { overflow-y: auto; padding: 28px 32px; position: relative; }
+  .dash-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+  .dash-header h1 { font-family: var(--font-display); font-size: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; }
+  .dash-header p { font-size: 13px; color: var(--ink-muted); margin-top: 6px; }
+  .dash-stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .dash-stat { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .dash-stat-label { font-size: 11px; color: var(--ink-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; font-family: var(--font-display); }
+  .dash-stat-value { font-family: var(--font-display); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); line-height: 1; }
+  .dash-stat-trend { font-size: 11px; color: var(--chief-green-dark); margin-top: 6px; font-weight: 600; }
+  .dash-stat-trend.is-down { color: #dc2626; }
+  .dash-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
+  .dash-module { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .dash-module.is-blurred, .dash-stat.is-blurred { filter: blur(3px) saturate(0.6); opacity: 0.5; pointer-events: none; }
+  .dash-module.is-active { border-color: var(--chief-green); box-shadow: 0 0 0 1px var(--chief-green), 0 20px 50px rgba(16, 185, 129, 0.12); cursor: pointer; position: relative; }
+  .dash-module.is-active::before { content: ''; position: absolute; inset: -1px; border-radius: 14px; border: 2px solid var(--chief-green); opacity: 0; animation: pulse 2.5s ease-in-out infinite; pointer-events: none; }
+  .dash-module-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .dash-module-title { display: flex; align-items: center; gap: 10px; }
+  .dash-module-title-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--chief-mint); color: var(--chief-green-dark); display: grid; place-items: center; }
+  .dash-module-title-icon [data-lucide] { width: 16px; height: 16px; }
+  .dash-module-title h3 { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--ink); }
+  .dash-module-title p { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+  .dash-module-cta { font-size: 12px; font-weight: 600; color: var(--chief-green-dark); display: inline-flex; align-items: center; gap: 4px; }
+  .dash-module-cta [data-lucide] { width: 12px; height: 12px; }
+  .dash-action-list { display: flex; flex-direction: column; gap: 8px; }
+  .dash-action-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 12px 14px; border-radius: 10px; background: var(--paper-tint); border: 1px solid var(--line-soft); align-items: center; transition: all 160ms ease; }
+  .dash-action-row.is-clickable { cursor: pointer; background: var(--chief-mint); border-color: #a7f3d0; position: relative; }
+  .dash-action-row.is-clickable:hover { transform: translateY(-1px); box-shadow: var(--shadow); border-color: var(--chief-green); }
+  .dash-action-row.is-clickable::after { content: ''; position: absolute; inset: -2px; border-radius: 12px; border: 2px solid var(--chief-green); opacity: 0; animation: pulse 2.2s ease-in-out infinite; pointer-events: none; }
+  .dash-action-row.is-done { opacity: 0.55; }
+  .dash-action-row.is-done .dash-action-text { text-decoration: line-through; text-decoration-color: var(--ink-faint); }
+  .dash-action-info { display: flex; align-items: center; gap: 10px; }
+  .dash-action-check { width: 16px; height: 16px; border: 1.5px solid #cbd5e1; border-radius: 50%; flex-shrink: 0; }
+  .dash-action-check.is-checked { background: var(--chief-green); border-color: var(--chief-green); display: grid; place-items: center; }
+  .dash-action-check.is-checked [data-lucide] { width: 10px; height: 10px; color: white; stroke-width: 3; }
+  .dash-action-text { font-size: 13px; color: var(--ink); font-weight: 500; }
+  .dash-action-text small { display: block; font-size: 11px; color: var(--ink-muted); margin-top: 2px; font-weight: 400; }
+  .dash-action-status { display: flex; align-items: center; gap: 8px; }
+  .dash-action-owner { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; color: white; font-size: 9px; font-weight: 700; background: linear-gradient(135deg, #94a3b8, #475569); }
+  .dash-action-owner.taylor { background: linear-gradient(135deg, #fbbf24, #d97706); }
+  .dash-action-owner.marcus { background: linear-gradient(135deg, #60a5fa, #1d4ed8); }
+  .dash-action-owner.priya { background: linear-gradient(135deg, #f472b6, #be185d); }
+  .dash-action-owner.devon { background: linear-gradient(135deg, #34d399, #047857); }
+  .dash-action-pill { font-size: 10px; padding: 3px 8px; border-radius: 999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+  .dash-action-pill.overdue { background: #fee2e2; color: #b91c1c; }
+  .dash-action-pill.due { background: #fef3c7; color: #92400e; }
+  .dash-action-pill.done { background: #d1fae5; color: #065f46; }
+  .dash-modal-overlay { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 220ms ease; }
+  .dash-modal-overlay.is-open { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .dash-modal { background: var(--paper); border-radius: 16px; width: 600px; max-width: 90%; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,0.3); animation: modalIn 320ms cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .dash-modal-head { padding: 20px 24px; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; justify-content: space-between; }
+  .dash-modal-head h2 { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 4px; }
+  .dash-modal-head p { font-size: 12px; color: var(--ink-muted); }
+  .dash-modal-close { width: 30px; height: 30px; background: transparent; border: none; cursor: pointer; color: var(--ink-muted); border-radius: 6px; display: grid; place-items: center; }
+  .dash-modal-close [data-lucide] { width: 16px; height: 16px; }
+  .dash-modal-close:hover { background: var(--paper-tint); color: var(--ink); }
+  .dash-modal-body { padding: 18px 24px 24px; overflow-y: auto; flex: 1; }
+  .dash-modal-body .section-label { font-family: var(--font-display); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; color: var(--ink-muted); margin: 14px 0 10px; }
+  .dash-modal-body .section-label:first-child { margin-top: 0; }
+  .dash-confirm { position: absolute; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; animation: fadeIn 220ms ease; }
+  .dash-confirm.is-open { display: flex; }
+  .dash-confirm-card { background: var(--paper); border-radius: 16px; width: 460px; max-width: 90%; padding: 26px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.3); animation: modalIn 320ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .dash-confirm-icon { width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #6ee7b7; margin: 0 auto 14px; display: grid; place-items: center; }
+  .dash-confirm-icon [data-lucide] { width: 26px; height: 26px; color: var(--chief-green-dark); }
+  .dash-confirm h3 { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 8px; }
+  .dash-confirm p { font-size: 14px; color: var(--ink-soft); line-height: 1.55; margin-bottom: 20px; }
+  .dash-confirm-buttons { display: flex; gap: 10px; justify-content: center; }
+  .dash-confirm-buttons button { padding: 11px 18px 9px; border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 600; line-height: 1.25; cursor: pointer; border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft); display: inline-flex; align-items: center; justify-content: center; }
+  .dash-confirm-buttons button.is-primary { background: var(--chief-green); color: white; border-color: var(--chief-green); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
+  .dash-confirm-buttons button.is-primary:hover { background: var(--chief-green-dark); }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.15); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.25); }
+
+  /* MOBILE */
+  .mobile-deck { display: none; }
+  @media (max-width: 640px) {
+    body.standalone { padding: 12px; place-items: start center !important; }
+    .embed-wrapper { 
+      aspect-ratio: auto !important; 
+      max-width: 420px; 
+      background: var(--paper); 
+      height: auto !important; 
+      overflow: visible !important;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12), 0 8px 20px rgba(15, 23, 42, 0.06);
+      position: relative;
+    }
+    .canvas { display: none !important; }
+    .reset-demo, .zoom-toggle { display: none !important; }
+    .mobile-deck { 
+      display: block; 
+      position: relative; 
+      width: 100%; 
+      background: var(--paper); 
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .mobile-deck-track { 
+      display: flex; 
+      width: 100%; 
+      overflow-x: auto; 
+      scroll-snap-type: x mandatory; 
+      scrollbar-width: none; 
+      align-items: flex-start;
+      transition: height 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .mobile-deck-track::-webkit-scrollbar { display: none; }
+    .mobile-slide { flex: 0 0 100%; min-width: 100%; scroll-snap-align: start; display: flex; flex-direction: column; padding: 20px 18px 24px; }
+    .mobile-slide-step { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--chief-green-dark); background: var(--chief-mint); padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; align-self: flex-start; }
+    .mobile-slide h2 { font-family: var(--font-display); font-weight: 600; font-size: 24px; line-height: 1.2; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.01em; }
+    .mobile-slide p.summary { font-size: 14px; color: var(--ink-muted); line-height: 1.5; margin-bottom: 18px; }
+    .mobile-card { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 14px; }
+    .mobile-card.is-tinted { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; }
+    .mobile-card .card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line-soft); }
+    .mobile-card.is-tinted .card-head { border-bottom-color: rgba(16,185,129,0.2); }
+    .mobile-card .card-head-icon { width: 28px; height: 28px; border-radius: 7px; background: white; border: 1px solid var(--line); display: grid; place-items: center; padding: 4px; }
+    .mobile-card .card-head-icon [data-lucide] { width: 14px; height: 14px; color: white; }
+    .mobile-card .card-head-title { font-weight: 700; font-size: 14px; color: var(--ink); }
+    .mobile-card .card-head-meta { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
+    .mobile-card .card-body { font-size: 13px; color: var(--ink-soft); line-height: 1.55; }
+    .mobile-card .card-body p { margin-bottom: 8px; }
+    .mobile-card .card-body p:last-child { margin-bottom: 0; }
+    .mobile-card .card-action-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--line-soft); margin-top: 8px; }
+    .mobile-card .card-action-row:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+    .mobile-card .card-action-pill { font-size: 9px; padding: 2px 7px; border-radius: 999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .mobile-card .card-action-pill.overdue { background: #fee2e2; color: #b91c1c; }
+    .mobile-card .card-action-pill.done { background: #d1fae5; color: #065f46; }
+    .mobile-card .agenda { background: var(--paper-tint); border-left: 3px solid var(--chief-green); border-radius: 3px; padding: 10px 12px; margin: 10px 0; }
+    .mobile-card .agenda-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); margin-bottom: 6px; font-family: var(--font-display); }
+    .mobile-card .agenda ol { padding-left: 16px; font-size: 12px; }
+    .mobile-card .agenda li { padding: 2px 0; color: var(--ink-soft); }
+    .mobile-card .agenda li b { color: var(--ink); }
+    .mobile-deck-dots { display: flex; justify-content: center; gap: 6px; padding: 14px 0 18px; background: var(--paper); }
+    .mobile-deck-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: all 200ms ease; }
+    .mobile-deck-dot.is-active { background: var(--chief-green); width: 22px; border-radius: 4px; }
+    .mobile-nav-hint { display: none; }
+    .mobile-sent-banner { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #6ee7b7; border-radius: 11px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .mobile-sent-banner .icon { width: 26px; height: 26px; border-radius: 50%; background: var(--chief-green); display: grid; place-items: center; }
+    .mobile-sent-banner .icon [data-lucide] { width: 13px; height: 13px; color: white; stroke-width: 3; }
+    .mobile-sent-banner strong { display: block; font-size: 12px; color: var(--chief-green-dark); font-family: var(--font-display); }
+    .mobile-sent-banner span { font-size: 11px; color: var(--ink-soft); }
+  }
+</style>
+</head>
+<body class="standalone">
+<div class="embed-wrapper">
+<div class="canvas" id="canvas">
+<div class="stage">
+
+<!-- SCREEN 1: SLACK -->
+<div class="screen is-active" id="screen-1" data-zoom="1.4" data-tx="-12" data-ty="24">
+  <div class="camera">
+    <div class="slack">
+      <div class="slack-rail">
+        <div class="slack-workspace">G</div>
+        <div class="slack-rail-icons">
+          <div class="slack-rail-icon"><i data-lucide="home"></i></div>
+          <div class="slack-rail-icon"><i data-lucide="message-circle"></i></div>
+          <div class="slack-rail-icon"><i data-lucide="bell"></i></div>
+          <div class="slack-rail-icon"><i data-lucide="more-horizontal"></i></div>
+        </div>
+      </div>
+      <aside class="slack-sidebar">
+        <div class="slack-workspace-name">
+          <h2>Chief <i data-lucide="chevron-down"></i></h2>
+          <div class="slack-icon-cluster">
+            <button><i data-lucide="search"></i></button>
+            <button><i data-lucide="pen-square"></i></button>
+          </div>
+        </div>
+        <nav class="slack-nav">
+          <div class="slack-nav-item"><i data-lucide="message-square"></i> Threads</div>
+          <div class="slack-nav-item"><i data-lucide="headphones"></i> Huddles</div>
+          <div class="slack-nav-item"><i data-lucide="send"></i> Drafts & sent</div>
+          <div class="slack-nav-item"><i data-lucide="users"></i> Directories</div>
+        </nav>
+        <div class="slack-section">
+          <div class="slack-section-header"><i data-lucide="chevron-down"></i> Channels</div>
+          <div class="slack-channel">celebrations</div>
+          <div class="slack-channel">competitor-alert</div>
+          <div class="slack-channel">general</div>
+          <div class="slack-channel">go-to-market</div>
+          <div class="slack-channel">marketing</div>
+          <div class="slack-channel">product</div>
+          <div class="slack-channel">revenue</div>
+        </div>
+      </aside>
+      <main class="slack-main">
+        <div class="slack-header">
+          <div class="slack-header-app-icon"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+          <h1>Chief</h1>
+        </div>
+        <div class="slack-tabs">
+          <div class="slack-tab is-active">Messages</div>
+          <div class="slack-tab">About</div>
+        </div>
+        <div class="slack-messages">
+          <div class="slack-date-pill"><span>Today</span></div>
+          <div class="slack-message">
+            <div class="slack-avatar"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+            <div>
+              <div class="slack-msg-header">
+                <span class="slack-msg-name">Chief</span>
+                <span class="slack-msg-app">APP</span>
+                <span class="slack-msg-time">2:47 PM</span>
+              </div>
+              <div class="slack-msg-title"><i data-lucide="file-text"></i> Meeting Followup: Arthropic Demo</div>
+              <div class="slack-msg-body">2 action items identified.</div>
+              <button class="slack-msg-button is-primary" onclick="goTo('screen-2')">View in Chief</button>
+            </div>
+          </div>
+        </div>
+        <div class="slack-composer">
+          <div class="slack-composer-box">
+            <div class="slack-composer-toolbar">
+              <i data-lucide="bold"></i>
+              <i data-lucide="italic"></i>
+              <i data-lucide="strikethrough"></i>
+              <i data-lucide="link"></i>
+              <i data-lucide="list"></i>
+            </div>
+            <div class="slack-composer-input">Message Chief</div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: MEETINGS -->
+<div class="screen" id="screen-2" data-zoom="1.45" data-tx="-32" data-ty="8">
+  <div class="camera">
+    <div class="chief-app">
+      <div class="chief-rail">
+        <div class="chief-rail-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+        <div class="chief-rail-icon"><i data-lucide="inbox"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="message-square"></i></div>
+        <div class="chief-rail-icon is-active"><i data-lucide="calendar"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="bar-chart-3"></i></div>
+        <div class="chief-rail-spacer"></div>
+        <div class="chief-rail-user">AI</div>
+      </div>
+      <main class="chief-meetings">
+        <div class="chief-meetings-header">
+          <h1>Meetings</h1>
+          <div class="chief-search">
+            <i data-lucide="search"></i>
+            <input placeholder="Search meetings..." />
+          </div>
+          <button class="chief-header-button demo-inert"><i data-lucide="video"></i> Send Chief</button>
+          <button class="chief-header-button demo-inert" style="padding: 8px 9px;"><i data-lucide="settings"></i></button>
+        </div>
+        <div class="chief-tabs">
+          <div class="chief-tab is-active">Upcoming <span class="count">6</span></div>
+          <div class="chief-tab">Past Meetings <span class="count">11</span></div>
+        </div>
+        <div class="chief-day-label">Today</div>
+        <div class="chief-meeting-card is-selected">
+          <div class="chief-meeting-date">
+            <div class="month">MAY</div>
+            <div class="day">21</div>
+          </div>
+          <div>
+            <div class="chief-meeting-title">Arthropic Demo: Discovery Followup <i data-lucide="video"></i></div>
+            <div class="chief-meeting-meta">
+              <i data-lucide="clock"></i>
+              11:00 AM – 11:45 AM
+              <span class="chief-pill">Chief</span>
+              <span class="chief-pill is-time">22h ago</span>
+            </div>
+            <div class="chief-meeting-avatars">
+              <div class="av">AI</div>
+              <div class="av">KR</div>
+              <div class="av">JC</div>
+            </div>
+          </div>
+          <div class="chief-meeting-actions">
+            <button class="chief-action-btn demo-inert">View</button>
+          </div>
+        </div>
+        <div class="chief-meeting-card">
+          <div class="chief-meeting-date">
+            <div class="month">MAY</div>
+            <div class="day">21</div>
+          </div>
+          <div>
+            <div class="chief-meeting-title">Pipeline Review: Q2 Forecast <i data-lucide="video"></i></div>
+            <div class="chief-meeting-meta">
+              <i data-lucide="clock"></i>
+              2:30 PM – 3:15 PM
+              <span class="chief-pill">Chief</span>
+              <span class="chief-pill is-time">In 38 Min</span>
+            </div>
+            <div class="chief-meeting-avatars">
+              <div class="av">AI</div>
+              <div class="av">TS</div>
+              <div class="av">DM</div>
+            </div>
+          </div>
+          <div class="chief-meeting-actions">
+            <button class="chief-action-btn is-primary demo-inert"><i data-lucide="send"></i> Send Assistant</button>
+            <button class="chief-action-btn demo-inert"><i data-lucide="video"></i> Join</button>
+          </div>
+        </div>
+        <div class="chief-meeting-card">
+          <div class="chief-meeting-date">
+            <div class="month">MAY</div>
+            <div class="day">21</div>
+          </div>
+          <div>
+            <div class="chief-meeting-title">1:1 — Abby & Marcus Webb <i data-lucide="video"></i></div>
+            <div class="chief-meeting-meta">
+              <i data-lucide="clock"></i>
+              4:00 PM – 4:30 PM
+              <span class="chief-pill">Chief</span>
+              <span class="chief-pill is-time">In 2h 8m</span>
+            </div>
+            <div class="chief-meeting-avatars">
+              <div class="av">AI</div>
+              <div class="av">MW</div>
+            </div>
+          </div>
+          <div class="chief-meeting-actions">
+            <button class="chief-action-btn is-primary demo-inert"><i data-lucide="send"></i> Send Assistant</button>
+            <button class="chief-action-btn demo-inert"><i data-lucide="video"></i> Join</button>
+          </div>
+        </div>
+        <div class="chief-day-label" style="margin-top: 18px;">Tomorrow</div>
+        <div class="chief-meeting-card">
+          <div class="chief-meeting-date">
+            <div class="month">MAY</div>
+            <div class="day">22</div>
+          </div>
+          <div>
+            <div class="chief-meeting-title">Globex Co. — Stage Gate Review <i data-lucide="video"></i></div>
+            <div class="chief-meeting-meta">
+              <i data-lucide="clock"></i>
+              10:30 AM – 11:00 AM
+              <span class="chief-pill">Chief</span>
+              <span class="chief-pill is-time">In 23h 8m</span>
+            </div>
+            <div class="chief-meeting-avatars">
+              <div class="av">AI</div>
+              <div class="av">G</div>
+            </div>
+          </div>
+          <div class="chief-meeting-actions">
+            <button class="chief-action-btn is-primary demo-inert"><i data-lucide="send"></i> Send Assistant</button>
+            <button class="chief-action-btn demo-inert"><i data-lucide="video"></i> Join</button>
+          </div>
+        </div>
+      </main>
+      <aside class="chief-detail">
+        <div class="chief-detail-header">
+          <div class="chief-detail-meta">
+            <i data-lucide="calendar"></i>
+            Wed, May 20 · 11:00 AM – 11:45 AM · 22h ago
+          </div>
+          <h2>Arthropic Demo: Discovery Followup</h2>
+          <div class="chief-detail-attendees">
+            <div class="av-row">
+              <div class="av">AI</div>
+              <div class="av">KR</div>
+              <div class="av">JC</div>
+            </div>
+            <span>3 attendees</span>
+          </div>
+        </div>
+        <div class="chief-detail-tabs">
+          <div class="chief-detail-tab is-active"><i data-lucide="check-circle-2"></i> Actions</div>
+          <div class="chief-detail-tab"><i data-lucide="file-text"></i> Summary</div>
+          <div class="chief-detail-tab"><i data-lucide="layers"></i> Context</div>
+        </div>
+        <div class="chief-detail-body">
+          <div class="chief-detail-section-title">
+            <h3><i data-lucide="check-circle-2"></i> Action Items</h3>
+            <span class="count">2</span>
+          </div>
+          <div class="chief-action-item">
+            <div class="chief-action-row">
+              <div class="chief-action-checkbox"></div>
+              <div class="chief-action-text">Schedule technical demo with Kat and Jared</div>
+            </div>
+            <div class="chief-action-owner"><i data-lucide="user"></i> ai@getchief.com</div>
+            <button class="chief-execute-btn" onclick="goTo('screen-3a')"><i data-lucide="message-square"></i> Execute with Chief</button>
+          </div>
+          <div class="chief-action-item">
+            <div class="chief-action-row">
+              <div class="chief-action-checkbox"></div>
+              <div class="chief-action-text">Review action items in dashboard</div>
+            </div>
+            <div class="chief-action-owner"><i data-lucide="user"></i> ai@getchief.com</div>
+            <button class="chief-execute-btn" onclick="goTo('screen-3b')"><i data-lucide="message-square"></i> Execute with Chief</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3a: EMAIL DRAFT -->
+<div class="screen" id="screen-3a" data-zoom="1.4" data-tx="14" data-ty="-14">
+  <div class="camera">
+    <div class="draft-screen">
+      <div class="chief-rail">
+        <div class="chief-rail-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+        <div class="chief-rail-icon"><i data-lucide="inbox"></i></div>
+        <div class="chief-rail-icon is-active"><i data-lucide="message-square"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="calendar"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="bar-chart-3"></i></div>
+        <div class="chief-rail-spacer"></div>
+        <div class="chief-rail-user">AI</div>
+      </div>
+      <div class="draft-canvas">
+        <button class="draft-back" onclick="goTo('screen-2')"><i data-lucide="arrow-left"></i> Back to meeting</button>
+        <div class="draft-heading">
+          <div class="draft-heading-icon"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+          <div>
+            <h1>Draft ready for review</h1>
+            <p>Chief drafted this meeting invite based on the action item from your Arthropic call.</p>
+          </div>
+        </div>
+        <div class="draft-thread">
+          <div class="draft-bubble is-system">
+            <div class="draft-bubble-label"><i data-lucide="sparkles"></i> Chief</div>
+            <p>I drafted a calendar invite to Kat and Jared for the technical demo you committed to during yesterday's discovery call. Time was chosen based on mutual availability. Review below and approve to send.</p>
+          </div>
+          <div class="draft-email">
+            <div class="draft-email-head">
+              <div class="draft-email-row">
+                <span class="label">To</span>
+                <span class="value">
+                  <span class="draft-email-chip"><span class="chip-av">KR</span> Kat Rivera</span>
+                  <span class="draft-email-chip"><span class="chip-av">JC</span> Jared Chen</span>
+                </span>
+              </div>
+              <div class="draft-email-row">
+                <span class="label">When</span>
+                <span class="value">Tuesday, May 26 · 10:00 AM – 10:45 AM PT</span>
+              </div>
+              <div class="draft-email-row">
+                <span class="label">Where</span>
+                <span class="value">Google Meet · auto-generated link</span>
+              </div>
+            </div>
+            <div class="draft-email-subject">Technical Demo — Arthropic × Chief</div>
+            <div class="draft-email-body">
+              <p>Hi Kat and Jared,</p>
+              <p>Great chatting yesterday. As discussed, here's a hold for the technical demo to walk through Chief's deal management and signal detection capabilities against your current RevOps workflow.</p>
+              <div class="agenda">
+                <div class="agenda-title">Agenda — 45 minutes</div>
+                <ol>
+                  <li><b>Intro & goals</b> — quick recap of discovery, what success looks like (5 min)</li>
+                  <li><b>Product walkthrough</b> — live tour of deal alerts, manager hand-off logic, and pipeline view (20 min)</li>
+                  <li><b>Use-case deep dive</b> — mapping to Arthropic's forecasting and rep enablement gaps (10 min)</li>
+                  <li><b>Q&A and next steps</b> — pricing, security review, pilot scoping (10 min)</li>
+                </ol>
+              </div>
+              <p>If the time doesn't work, feel free to grab another slot on my calendar. Looking forward to it.</p>
+              <p>Best,<br/>Abby</p>
+            </div>
+          </div>
+          <div class="draft-actions">
+            <button class="draft-action-btn is-approve" onclick="markSent('sent-3a', this)"><i data-lucide="check"></i> Approve</button>
+            <button class="draft-action-btn is-disabled" disabled><i data-lucide="pencil"></i> Edit</button>
+            <button class="draft-action-btn is-disabled" disabled><i data-lucide="x"></i> Dismiss</button>
+          </div>
+          <div class="draft-sent" id="sent-3a" style="display:none;">
+            <div class="draft-sent-icon"><i data-lucide="check"></i></div>
+            <div class="draft-sent-text">
+              <strong>Sent!</strong>
+              <span>Invite delivered to Kat Rivera and Jared Chen. Added to your calendar.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3b: DASHBOARD -->
+<div class="screen" id="screen-3b" data-zoom="1.4" data-tx="17" data-ty="-3">
+  <div class="camera">
+    <div class="dash-screen">
+      <div class="chief-rail">
+        <div class="chief-rail-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+        <div class="chief-rail-icon is-active"><i data-lucide="inbox"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="message-square"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="calendar"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="bar-chart-3"></i></div>
+        <div class="chief-rail-spacer"></div>
+        <div class="chief-rail-user">AI</div>
+      </div>
+      <main class="dash-main">
+        <div class="dash-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Wednesday, May 21 · Good afternoon, Abby</p>
+          </div>
+          <button class="draft-back" onclick="goTo('screen-2')" style="margin-bottom:0;"><i data-lucide="arrow-left"></i> Back to meeting</button>
+        </div>
+        <div class="dash-stat-row">
+          <div class="dash-stat is-blurred">
+            <div class="dash-stat-label">Pipeline value</div>
+            <div class="dash-stat-value">$2.4M</div>
+            <div class="dash-stat-trend">▲ 12% vs. last week</div>
+          </div>
+          <div class="dash-stat is-blurred">
+            <div class="dash-stat-label">At-risk deals</div>
+            <div class="dash-stat-value">7</div>
+            <div class="dash-stat-trend is-down">▼ 2 since Monday</div>
+          </div>
+          <div class="dash-stat is-blurred">
+            <div class="dash-stat-label">Meetings this week</div>
+            <div class="dash-stat-value">23</div>
+            <div class="dash-stat-trend">▲ 4 vs. last week</div>
+          </div>
+          <div class="dash-stat is-blurred">
+            <div class="dash-stat-label">Forecast accuracy</div>
+            <div class="dash-stat-value">87%</div>
+            <div class="dash-stat-trend">▲ 3pts</div>
+          </div>
+        </div>
+        <div class="dash-grid">
+          <div class="dash-module is-active" onclick="openActionItems()">
+            <div class="dash-module-head">
+              <div class="dash-module-title">
+                <div class="dash-module-title-icon"><i data-lucide="check-circle-2"></i></div>
+                <div>
+                  <h3>Open Action Items</h3>
+                  <p>Across all meetings · last 7 days</p>
+                </div>
+              </div>
+              <span class="dash-module-cta">View all <i data-lucide="chevron-right"></i></span>
+            </div>
+            <div class="dash-action-list">
+              <div class="dash-action-row is-done">
+                <div class="dash-action-info">
+                  <div class="dash-action-check is-checked"><i data-lucide="check"></i></div>
+                  <div class="dash-action-text">
+                    Schedule technical demo with Kat and Jared
+                    <small>Arthropic Demo · executed by Chief · 2m ago</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner">AI</div>
+                  <span class="dash-action-pill done">Done</span>
+                </div>
+              </div>
+              <div class="dash-action-row is-clickable" onclick="event.stopPropagation(); openSlackConfirm();">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Send proposal — Globex Industries
+                    <small>Owner: Taylor Smith · 3 days overdue</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner taylor">TS</div>
+                  <span class="dash-action-pill overdue">Overdue</span>
+                </div>
+              </div>
+              <div class="dash-action-row">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Update CRM stage — Acme Co.
+                    <small>Owner: Marcus Webb · due tomorrow</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner marcus">MW</div>
+                  <span class="dash-action-pill due">Due Soon</span>
+                </div>
+              </div>
+              <div class="dash-action-row">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Share pricing one-pager — Initech
+                    <small>Owner: Priya Shah · due Friday</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner priya">PS</div>
+                  <span class="dash-action-pill due">Due Soon</span>
+                </div>
+              </div>
+              <div class="dash-action-row">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Send security questionnaire — Hooli Inc.
+                    <small>Owner: Devon Park · due next Monday</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner devon">DP</div>
+                  <span class="dash-action-pill">Open</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-module is-blurred">
+            <div class="dash-module-head">
+              <div class="dash-module-title">
+                <div class="dash-module-title-icon"><i data-lucide="activity"></i></div>
+                <div>
+                  <h3>Pipeline Health</h3>
+                  <p>Deal risk signals · this quarter</p>
+                </div>
+              </div>
+            </div>
+            <div style="font-family: var(--font-display); font-weight: 700; font-size: 32px; letter-spacing: -0.02em; color: var(--ink); margin: 8px 0 4px;">82<span style="font-size:18px;color:var(--ink-muted);">/100</span></div>
+            <p style="font-size:12px;color:var(--ink-muted);">3 deals flagged for stalled engagement.</p>
+          </div>
+          <div class="dash-module is-blurred">
+            <div class="dash-module-head">
+              <div class="dash-module-title">
+                <div class="dash-module-title-icon"><i data-lucide="video"></i></div>
+                <div>
+                  <h3>Meeting Insights</h3>
+                  <p>Patterns across recent calls</p>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Pricing pushback mentioned in 4 of last 8 deals · security review surfacing earlier than baseline.</p>
+          </div>
+          <div class="dash-module is-blurred">
+            <div class="dash-module-head">
+              <div class="dash-module-title">
+                <div class="dash-module-title-icon"><i data-lucide="users"></i></div>
+                <div>
+                  <h3>Team Activity</h3>
+                  <p>Rep engagement · this week</p>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:13px;color:var(--ink-soft);line-height:1.5;">Taylor and Marcus leading in follow-up speed. Two reps behind on CRM hygiene.</p>
+          </div>
+        </div>
+        <div class="dash-modal-overlay" id="action-modal">
+          <div class="dash-modal">
+            <div class="dash-modal-head">
+              <div>
+                <h2>Open Action Items</h2>
+                <p>5 items across 4 deals · click any to execute with Chief</p>
+              </div>
+              <button class="dash-modal-close" onclick="closeActionItems()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="dash-modal-body">
+              <div class="section-label">Overdue</div>
+              <div class="dash-action-row is-clickable" onclick="openSlackConfirm()" style="background: var(--chief-mint); border-color: #a7f3d0;">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Send proposal — Globex Industries
+                    <small>Owner: Taylor Smith · 3 days overdue · committed in 5/16 pricing call</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner taylor">TS</div>
+                  <span class="dash-action-pill overdue">Overdue</span>
+                </div>
+              </div>
+              <div class="section-label">Due This Week</div>
+              <div class="dash-action-row">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Update CRM stage — Acme Co.
+                    <small>Owner: Marcus Webb · due tomorrow</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner marcus">MW</div>
+                  <span class="dash-action-pill due">Due Soon</span>
+                </div>
+              </div>
+              <div class="dash-action-row">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Share pricing one-pager — Initech
+                    <small>Owner: Priya Shah · due Friday</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner priya">PS</div>
+                  <span class="dash-action-pill due">Due Soon</span>
+                </div>
+              </div>
+              <div class="section-label">Upcoming</div>
+              <div class="dash-action-row">
+                <div class="dash-action-info">
+                  <div class="dash-action-check"></div>
+                  <div class="dash-action-text">
+                    Send security questionnaire — Hooli Inc.
+                    <small>Owner: Devon Park · due next Monday</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner devon">DP</div>
+                  <span class="dash-action-pill">Open</span>
+                </div>
+              </div>
+              <div class="section-label">Completed</div>
+              <div class="dash-action-row is-done">
+                <div class="dash-action-info">
+                  <div class="dash-action-check is-checked"><i data-lucide="check"></i></div>
+                  <div class="dash-action-text">
+                    Schedule technical demo with Kat and Jared
+                    <small>Arthropic Demo · executed by Chief · 2m ago</small>
+                  </div>
+                </div>
+                <div class="dash-action-status">
+                  <div class="dash-action-owner">AI</div>
+                  <span class="dash-action-pill done">Done</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-confirm" id="slack-confirm">
+          <div class="dash-confirm-card">
+            <div class="dash-confirm-icon"><i data-lucide="message-square"></i></div>
+            <h3>Send Slack to Taylor?</h3>
+            <p>Chief will draft a follow-up message to <b>@taylor</b> asking about the status of the Globex proposal. You'll review it before it sends.</p>
+            <div class="dash-confirm-buttons">
+              <button onclick="closeSlackConfirm()">Cancel</button>
+              <button class="is-primary" onclick="goTo('screen-4'); closeSlackConfirm();">Draft message</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: SLACK DRAFT -->
+<div class="screen" id="screen-4" data-zoom="1.4" data-tx="14" data-ty="14">
+  <div class="camera">
+    <div class="draft-screen">
+      <div class="chief-rail">
+        <div class="chief-rail-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+        <div class="chief-rail-icon is-active"><i data-lucide="inbox"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="message-square"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="calendar"></i></div>
+        <div class="chief-rail-icon"><i data-lucide="bar-chart-3"></i></div>
+        <div class="chief-rail-spacer"></div>
+        <div class="chief-rail-user">AI</div>
+      </div>
+      <div class="draft-canvas">
+        <button class="draft-back" onclick="goTo('screen-3b')"><i data-lucide="arrow-left"></i> Back to dashboard</button>
+        <div class="draft-heading">
+          <div class="draft-heading-icon"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+          <div>
+            <h1>Draft ready for review</h1>
+            <p>Chief drafted this Slack message to Taylor based on the overdue Globex proposal.</p>
+          </div>
+        </div>
+        <div class="draft-thread">
+          <div class="draft-bubble is-system">
+            <div class="draft-bubble-label"><i data-lucide="sparkles"></i> Chief</div>
+            <p>Taylor committed to sending the Globex proposal during your 5/16 pricing call. It's now 3 days overdue and Globex hasn't been contacted since. Here's a friendly nudge — tone is casual, not punitive.</p>
+          </div>
+          <div class="draft-slack">
+            <div class="draft-slack-head">
+              <i data-lucide="message-circle"></i>
+              <div class="channel">@taylor</div>
+              <div class="channel-meta">Direct message</div>
+            </div>
+            <div class="draft-slack-body">
+              <div class="draft-slack-from">
+                <div class="av"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+                <div>
+                  <div class="name">Chief <span class="badge">DRAFT</span></div>
+                  <div class="time">Drafting on behalf of Abby · pending approval</div>
+                </div>
+              </div>
+              <div class="draft-slack-message">Hey Taylor — circling back on the Globex proposal. I know things have been moving fast on your end. Where are we on getting it out the door? Happy to jump on a quick call if there's anything blocking, or to take something off your plate if it helps. Just want to make sure Globex doesn't lose momentum before the stage gate review tomorrow. 🙏</div>
+            </div>
+          </div>
+          <div class="draft-actions">
+            <button class="draft-action-btn is-approve" onclick="markSent('sent-4', this)"><i data-lucide="check"></i> Approve</button>
+            <button class="draft-action-btn is-disabled" disabled><i data-lucide="pencil"></i> Edit</button>
+            <button class="draft-action-btn is-disabled" disabled><i data-lucide="x"></i> Dismiss</button>
+          </div>
+          <div class="draft-sent" id="sent-4" style="display:none;">
+            <div class="draft-sent-icon"><i data-lucide="check"></i></div>
+            <div class="draft-sent-text">
+              <strong>Sent!</strong>
+              <span>Message delivered to @taylor. Chief will notify you when she replies.</span>
+            </div>
+          </div>
+
+          <div class="draft-bubble" style="background: var(--paper-tint); border-color: var(--line-soft);">
+            <div class="draft-bubble-label" style="color: var(--ink-muted);"><i data-lucide="layers"></i> What happens next</div>
+            <p style="font-size: 13px;">Chief will monitor Taylor's response and surface it in your inbox. If she doesn't reply within 24 hours, I'll send a gentle follow-up nudge.</p>
+          </div>
+
+          <div class="draft-bubble" style="background: var(--paper-tint); border-color: var(--line-soft);">
+            <div class="draft-bubble-label" style="color: var(--ink-muted);"><i data-lucide="activity"></i> Related signals</div>
+            <p style="font-size: 13px;">Globex's last engagement was 8 days ago. Their stage gate review meeting is tomorrow at 10:30 AM — keeping momentum until then.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.stage -->
+</div><!-- /.canvas -->
+
+<!-- ============ MOBILE SWIPE DECK ============ -->
+<div class="mobile-deck">
+  <div class="mobile-deck-track" id="mobile-track">
+
+    <div class="mobile-slide">
+      <span class="mobile-slide-step">Step 1 of 5</span>
+      <h2>A meeting wraps. Chief notices.</h2>
+      <p class="summary">Right after your Arthropic discovery call, Chief drops a summary in Slack with the action items it identified.</p>
+      <div class="mobile-card">
+        <div class="card-head">
+          <div class="card-head-icon"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+          <div>
+            <div class="card-head-title">Chief <span style="background:#f1f5f9;color:#334155;font-size:9px;padding:1px 4px;border-radius:3px;font-weight:600;margin-left:4px;">APP</span></div>
+            <div class="card-head-meta">2:47 PM · Today</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p style="font-weight:600;color:var(--ink);">📝 Meeting Followup: Arthropic Demo</p>
+          <p>2 action items identified.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-slide">
+      <span class="mobile-slide-step">Step 2 of 5</span>
+      <h2>Tap in. Action items waiting.</h2>
+      <p class="summary">Inside Chief, the meeting's action items are ready to execute. No copy-paste, no rewriting.</p>
+      <div class="mobile-card">
+        <div class="card-head">
+          <div class="card-head-icon" style="background:#eef2ff;"><i data-lucide="calendar" style="color:#4338ca !important;"></i></div>
+          <div>
+            <div class="card-head-title">Arthropic Demo: Discovery Followup</div>
+            <div class="card-head-meta">Wed, May 20 · 22h ago</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px;font-family:var(--font-display);">Action Items · 2</div>
+          <div style="padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;">
+            <div style="font-size:13px;color:var(--ink);">Schedule technical demo with Kat and Jared</div>
+            <div style="margin-top:8px;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;background:var(--chief-mint);border:1px solid var(--chief-green);border-radius:5px;color:var(--chief-green-dark);font-size:11px;font-weight:600;">
+              <i data-lucide="message-square" style="width:11px;height:11px;"></i> Execute with Chief
+            </div>
+          </div>
+          <div style="padding:10px;border:1px solid var(--line);border-radius:8px;">
+            <div style="font-size:13px;color:var(--ink);">Review action items in dashboard</div>
+            <div style="margin-top:8px;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;background:var(--chief-mint);border:1px solid var(--chief-green);border-radius:5px;color:var(--chief-green-dark);font-size:11px;font-weight:600;">
+              <i data-lucide="message-square" style="width:11px;height:11px;"></i> Execute with Chief
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-slide">
+      <span class="mobile-slide-step">Step 3 of 5</span>
+      <h2>The invite, drafted.</h2>
+      <p class="summary">Chief writes the email to Kat and Jared, picks a time, fills in the agenda. You review and approve.</p>
+      <div class="mobile-card is-tinted">
+        <div class="card-head">
+          <div class="card-head-icon" style="background:white;border:1px solid #a7f3d0;padding:4px;"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+          <div>
+            <div class="card-head-title" style="color:var(--chief-green-dark);">Chief</div>
+            <div class="card-head-meta">Draft ready for review</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p style="margin-bottom:0;">I drafted a calendar invite to Kat and Jared based on yesterday's discovery call commitment.</p>
+        </div>
+      </div>
+      <div class="mobile-card">
+        <div style="font-size:11px;color:var(--ink-muted);margin-bottom:6px;"><b>To</b> · Kat Rivera, Jared Chen</div>
+        <div style="font-size:11px;color:var(--ink-muted);margin-bottom:10px;"><b>When</b> · Tue, May 26 · 10:00 AM PT</div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:8px;font-family:var(--font-display);">Technical Demo — Arthropic × Chief</div>
+        <div class="card-body">
+          <p>Hi Kat and Jared, great chatting yesterday. Here's a hold for the technical demo we discussed.</p>
+          <div class="agenda">
+            <div class="agenda-title">Agenda · 45 minutes</div>
+            <ol>
+              <li><b>Intro & goals</b> (5 min)</li>
+              <li><b>Product walkthrough</b> (20 min)</li>
+              <li><b>Use-case deep dive</b> (10 min)</li>
+              <li><b>Q&A and next steps</b> (10 min)</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <button style="width:100%;padding:13px;border:none;border-radius:9px;background:var(--chief-green);color:white;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,0.25);" onclick="mobileMarkSent('mobile-sent-3')">
+        <i data-lucide="check" style="width:14px;height:14px;stroke-width:2.5;"></i> Approve &amp; Send
+      </button>
+      <div id="mobile-sent-3" class="mobile-sent-banner" style="display:none;">
+        <div class="icon"><i data-lucide="check"></i></div>
+        <div>
+          <strong>Sent!</strong>
+          <span>Invite delivered to Kat and Jared.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-slide">
+      <span class="mobile-slide-step">Step 4 of 5</span>
+      <h2>See what's slipping. Act on it.</h2>
+      <p class="summary">Chief surfaces overdue commitments across your team. Tap any to follow up — Chief drafts the message.</p>
+      <div class="mobile-card">
+        <div class="card-head">
+          <div class="card-head-icon" style="background:var(--chief-mint);"><i data-lucide="check-circle-2" style="color:var(--chief-green-dark) !important;"></i></div>
+          <div>
+            <div class="card-head-title">Open Action Items</div>
+            <div class="card-head-meta">5 items · last 7 days</div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div style="padding:10px 12px;background:var(--chief-mint);border:1.5px solid var(--chief-green);border-radius:8px;margin-bottom:8px;cursor:pointer;" onclick="mobileScrollToSlide(4)">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:500;color:var(--ink);">Send proposal — Globex Industries</div>
+                <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Owner: Taylor Smith</div>
+              </div>
+              <span class="card-action-pill overdue">Overdue</span>
+            </div>
+          </div>
+          <div class="card-action-row">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:var(--ink);">Update CRM stage — Acme Co.</div>
+              <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Owner: Marcus Webb · due tomorrow</div>
+            </div>
+          </div>
+          <div class="card-action-row">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:var(--ink);">Share pricing one-pager — Initech</div>
+              <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Owner: Priya Shah · due Friday</div>
+            </div>
+          </div>
+          <div class="card-action-row" style="opacity:0.55;">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:var(--ink);text-decoration:line-through;">Schedule technical demo with Kat and Jared</div>
+              <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Executed by Chief · 2m ago</div>
+            </div>
+            <span class="card-action-pill done">Done</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-slide">
+      <span class="mobile-slide-step">Step 5 of 5</span>
+      <h2>Follow up. Without the awkward.</h2>
+      <p class="summary">Chief drafts a friendly nudge to Taylor about the overdue Globex proposal. You approve, it sends.</p>
+      <div class="mobile-card is-tinted">
+        <div class="card-head">
+          <div class="card-head-icon" style="background:white;border:1px solid #a7f3d0;padding:4px;"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+          <div>
+            <div class="card-head-title" style="color:var(--chief-green-dark);">Chief</div>
+            <div class="card-head-meta">Draft ready for review</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <p style="margin-bottom:0;">Taylor committed to sending the Globex proposal during your 5/16 pricing call. It's 3 days overdue. Here's a friendly nudge.</p>
+        </div>
+      </div>
+      <div class="mobile-card" style="padding:0;overflow:hidden;">
+        <div style="background:var(--slack-purple);color:white;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+          <i data-lucide="message-circle" style="width:13px;height:13px;"></i>
+          <span style="font-weight:700;font-size:13px;font-family:var(--font-display);">@taylor</span>
+          <span style="font-size:10px;opacity:0.7;margin-left:auto;">Direct message</span>
+        </div>
+        <div style="padding:14px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <div style="width:26px;height:26px;border-radius:5px;background:white;border:1px solid var(--line);display:grid;place-items:center;padding:4px;"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--ink);">Chief <span style="background:#f1f5f9;color:#334155;font-size:8px;padding:1px 4px;border-radius:3px;font-weight:600;">DRAFT</span></div>
+              <div style="font-size:10px;color:var(--ink-muted);">For Abby · pending approval</div>
+            </div>
+          </div>
+          <div style="font-size:13px;color:var(--ink-soft);line-height:1.55;">Hey Taylor — circling back on the Globex proposal. Where are we on getting it out the door? Happy to jump on a quick call if there's anything blocking. Just want to make sure Globex doesn't lose momentum before tomorrow's stage gate review. 🙏</div>
+        </div>
+      </div>
+      <button style="width:100%;padding:13px;border:none;border-radius:9px;background:var(--chief-green);color:white;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,0.25);" onclick="mobileMarkSent('mobile-sent-5')">
+        <i data-lucide="check" style="width:14px;height:14px;stroke-width:2.5;"></i> Approve &amp; Send
+      </button>
+      <div id="mobile-sent-5" class="mobile-sent-banner" style="display:none;">
+        <div class="icon"><i data-lucide="check"></i></div>
+        <div>
+          <strong>Sent!</strong>
+          <span>Message delivered to @taylor.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="mobile-nav-hint">
+    <i data-lucide="chevrons-right" style="width:11px;height:11px;"></i>
+    Swipe to continue
+  </div>
+  <div class="mobile-deck-dots" id="mobile-dots">
+    <div class="mobile-deck-dot is-active"></div>
+    <div class="mobile-deck-dot"></div>
+    <div class="mobile-deck-dot"></div>
+    <div class="mobile-deck-dot"></div>
+    <div class="mobile-deck-dot"></div>
+  </div>
+</div>
+
+<button class="zoom-toggle" id="zoom-toggle" onclick="toggleZoom()">
+  <i data-lucide="zoom-out"></i>
+  <span id="zoom-toggle-label">Zoom out</span>
+</button>
+<button class="reset-demo" onclick="resetDemo()">
+  <i data-lucide="rotate-ccw"></i>
+  Reset demo
+</button>
+</div><!-- /.embed-wrapper -->
+
+<script>
+  const LUCIDE_ICONS = {
+  'activity': `<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`,
+  'arrow-left': `<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>`,
+  'bar-chart-3': `<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>`,
+  'bell': `<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>`,
+  'bold': `<path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/>`,
+  'calendar': `<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>`,
+  'check': `<path d="M20 6 9 17l-5-5"/>`,
+  'check-circle-2': `<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>`,
+  'chevron-down': `<path d="m6 9 6 6 6-6"/>`,
+  'chevron-right': `<path d="m9 18 6-6-6-6"/>`,
+  'chevrons-right': `<path d="m6 17 5-5-5-5"/><path d="m13 17 5-5-5-5"/>`,
+  'clock': `<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>`,
+  'file-text': `<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>`,
+  'headphones': `<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1v-6a9 9 0 0 1 18 0v6a1 1 0 0 1-1 1h-2a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>`,
+  'home': `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,
+  'inbox': `<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>`,
+  'italic': `<line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/>`,
+  'layers': `<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>`,
+  'link': `<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>`,
+  'list': `<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>`,
+  'message-circle': `<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>`,
+  'message-square': `<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,
+  'more-horizontal': `<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>`,
+  'pen-square': `<path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"/>`,
+  'pencil': `<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>`,
+  'rotate-ccw': `<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>`,
+  'search': `<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>`,
+  'send': `<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>`,
+  'settings': `<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>`,
+  'sparkles': `<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>`,
+  'strikethrough': `<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/>`,
+  'user': `<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>`,
+  'users': `<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`,
+  'video': `<path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/>`,
+  'x': `<path d="M18 6 6 18"/><path d="m6 6 12 12"/>`,
+  'zoom-out': `<circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="8" x2="14" y1="11" y2="11"/>`,
+};
+
+  // Detect iframe embedding — auto-switch to embedded styling
+  if (window.self !== window.top) {
+    document.body.classList.remove('standalone');
+    document.body.classList.add('embedded');
+  }
+
+  function refreshIcons() {
+    document.querySelectorAll('i[data-lucide]').forEach(el => {
+      const name = el.getAttribute('data-lucide');
+      const paths = LUCIDE_ICONS[name];
+      if (!paths) return;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.innerHTML = paths;
+      svg.classList.add('lucide-icon');
+      svg.setAttribute('data-lucide', name);
+      // Copy any classes from the <i> for styling
+      if (el.className) el.classList.forEach(c => svg.classList.add(c));
+      // Copy any inline styles (e.g. width:11px;height:11px on chief-action-owner [data-lucide])
+      if (el.style.cssText) svg.style.cssText = el.style.cssText;
+      el.replaceWith(svg);
+    });
+  }
+  // Also handle dynamic SVG re-rendering after icon swaps (e.g. zoom toggle)
+  function updateLucideIcon(svgEl, name) {
+    const paths = LUCIDE_ICONS[name];
+    if (paths) svgEl.innerHTML = paths;
+  }
+  refreshIcons();
+
+  // ===== CANVAS SCALING =====
+  const wrapper = document.querySelector('.embed-wrapper');
+  const canvas = document.getElementById('canvas');
+  const CANVAS_W = 1440;
+
+  function scaleCanvas() {
+    if (!wrapper || !canvas) return;
+    const rect = wrapper.getBoundingClientRect();
+    if (rect.width === 0) return;
+    const scale = rect.width / CANVAS_W;
+    canvas.style.transform = 'scale(' + scale + ')';
+  }
+  scaleCanvas();
+  window.addEventListener('resize', scaleCanvas);
+  if (window.ResizeObserver) {
+    new ResizeObserver(scaleCanvas).observe(wrapper);
+  }
+
+  // ===== ZOOM (CAMERA MOVE) =====
+  let zoomTimer = null;
+  let isHovering = false;
+  let isZoomedIn = false;  // tracks current zoom state for toggle
+
+  function applyZoom(screenEl, zoomed) {
+    const camera = screenEl.querySelector('.camera');
+    if (!camera) return;
+    camera.style.transformOrigin = 'center center';
+    if (zoomed) {
+      const zoom = screenEl.dataset.zoom || '1.3';
+      const tx = screenEl.dataset.tx || '0';
+      const ty = screenEl.dataset.ty || '0';
+      camera.style.transform = 'translate(' + tx + '%, ' + ty + '%) scale(' + zoom + ')';
+    } else {
+      camera.style.transform = 'translate(0, 0) scale(1)';
+    }
+    isZoomedIn = zoomed;
+    updateZoomToggleLabel();
+  }
+
+  function updateZoomToggleLabel() {
+    const label = document.getElementById('zoom-toggle-label');
+    const iconEl = document.querySelector('#zoom-toggle svg, #zoom-toggle [data-lucide]');
+    if (!label) return;
+    const name = isZoomedIn ? 'zoom-out' : 'zoom-out';  // we only have zoom-out icon; reuse
+    label.textContent = isZoomedIn ? 'Zoom out' : 'Zoom in';
+    if (iconEl && iconEl.tagName === 'svg') {
+      iconEl.innerHTML = LUCIDE_ICONS[name] || '';
+    }
+  }
+
+  function toggleZoom() {
+    clearTimeout(zoomTimer);  // cancel any pending auto-zoom
+    const active = document.querySelector('.screen.is-active');
+    if (!active) return;
+    applyZoom(active, !isZoomedIn);
+  }
+
+  function scheduleZoom(screenEl) {
+    clearTimeout(zoomTimer);
+    applyZoom(screenEl, false);
+    zoomTimer = setTimeout(() => {
+      if (!isHovering && screenEl.classList.contains('is-active')) {
+        applyZoom(screenEl, true);
+      }
+    }, 1200);
+  }
+
+  // Zoom stays put once it lands; no hover-pause
+
+  // ===== SCREEN NAVIGATION =====
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => {
+      s.classList.remove('is-active');
+      applyZoom(s, false);
+    });
+    const target = document.getElementById(id);
+    target.classList.add('is-active');
+    // Reset scroll
+    document.querySelectorAll('#' + id + ' .draft-canvas, #' + id + ' .dash-main, #' + id + ' .chief-meetings, #' + id + ' .slack-messages').forEach(el => el.scrollTop = 0);
+    // No auto-scroll needed — content fits canvas after layout compression
+    refreshIcons();
+    scheduleZoom(target);
+  }
+
+  function markSent(id, btn) {
+    const sent = document.getElementById(id);
+    if (!sent) return;
+    sent.style.display = 'flex';
+    if (btn) {
+      btn.style.opacity = '0.55';
+      btn.style.pointerEvents = 'none';
+      btn.style.boxShadow = 'none';
+    }
+    refreshIcons();
+    // Auto-scroll to keep the sent banner in view (smoothly)
+    setTimeout(() => {
+      const scrollContainer = sent.closest('.draft-canvas');
+      if (scrollContainer) {
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  }
+
+  function openActionItems() {
+    document.getElementById('action-modal').classList.add('is-open');
+    refreshIcons();
+  }
+  function closeActionItems() {
+    document.getElementById('action-modal').classList.remove('is-open');
+  }
+  function openSlackConfirm() {
+    closeActionItems();
+    document.getElementById('slack-confirm').classList.add('is-open');
+    refreshIcons();
+  }
+  function closeSlackConfirm() {
+    document.getElementById('slack-confirm').classList.remove('is-open');
+  }
+
+  function resetDemo() {
+    document.querySelectorAll('.draft-sent').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.draft-action-btn.is-approve').forEach(btn => {
+      btn.style.opacity = '';
+      btn.style.pointerEvents = '';
+      btn.style.boxShadow = '';
+    });
+    closeActionItems();
+    closeSlackConfirm();
+    goTo('screen-1');
+    const track = document.getElementById('mobile-track');
+    if (track) track.scrollTo({ left: 0, behavior: 'smooth' });
+    document.querySelectorAll('.mobile-sent-banner').forEach(el => el.style.display = 'none');
+  }
+
+  const actionModalEl = document.getElementById('action-modal');
+  if (actionModalEl) {
+    actionModalEl.addEventListener('click', (e) => {
+      if (e.target.id === 'action-modal') closeActionItems();
+    });
+  }
+  const slackConfirmEl = document.getElementById('slack-confirm');
+  if (slackConfirmEl) {
+    slackConfirmEl.addEventListener('click', (e) => {
+      if (e.target.id === 'slack-confirm') closeSlackConfirm();
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeActionItems();
+      closeSlackConfirm();
+    }
+  });
+
+  // Trigger initial zoom for screen 1
+  setTimeout(() => {
+    const initial = document.querySelector('.screen.is-active');
+    if (initial) scheduleZoom(initial);
+  }, 100);
+
+  // ===== MOBILE SWIPE DECK =====
+  const mobileTrack = document.getElementById('mobile-track');
+  const mobileDots = document.querySelectorAll('.mobile-deck-dot');
+
+  function syncMobileHeight() {
+    if (!mobileTrack) return;
+    const slides = mobileTrack.querySelectorAll('.mobile-slide');
+    const slideWidth = mobileTrack.clientWidth;
+    const idx = Math.round(mobileTrack.scrollLeft / slideWidth);
+    const current = slides[idx];
+    if (current) {
+      // Temporarily remove height constraint to measure natural height
+      current.style.height = 'auto';
+      const naturalHeight = current.scrollHeight;
+      mobileTrack.style.height = naturalHeight + 'px';
+    }
+  }
+  
+  if (mobileTrack) {
+    mobileTrack.addEventListener('scroll', () => {
+      const slideWidth = mobileTrack.clientWidth;
+      const idx = Math.round(mobileTrack.scrollLeft / slideWidth);
+      mobileDots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+      syncMobileHeight();
+    });
+    // Initial sync after load
+    requestAnimationFrame(syncMobileHeight);
+    // Re-sync on resize and on font load
+    window.addEventListener('resize', syncMobileHeight);
+    if (document.fonts) {
+      document.fonts.ready.then(syncMobileHeight);
+    }
+  }
+
+  function mobileMarkSent(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'flex';
+    refreshIcons();
+    requestAnimationFrame(syncMobileHeight);
+  }
+  function mobileScrollToSlide(idx) {
+    if (!mobileTrack) return;
+    mobileTrack.scrollTo({ left: mobileTrack.clientWidth * idx, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
