@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Chief — Clickable Demo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -392,69 +391,471 @@
   .mobile-deck { display: none; }
   @media (max-width: 820px) {
     body.standalone { padding: 12px; place-items: start center !important; }
-    .embed-wrapper { 
-      aspect-ratio: auto !important; 
-      max-width: 420px; 
-      background: var(--paper); 
-      height: auto !important; 
-      overflow: visible !important;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12), 0 8px 20px rgba(15, 23, 42, 0.06);
-      position: relative;
+    body.embedded { padding: 0; }
+    
+    .embed-wrapper {
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: auto;
+      height: auto;
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+      overflow: visible;
     }
-    .canvas { display: none !important; }
-    .reset-demo, .zoom-toggle { display: none !important; }
-    .mobile-deck { 
-      display: block; 
-      position: relative; 
-      width: 100%; 
-      background: var(--paper); 
-      border-radius: 16px;
+    .canvas, .reset-demo, .zoom-toggle { display: none !important; }
+    
+    .mobile-deck {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: transparent;
+    }
+    
+    .mobile-frame {
+      position: relative;
+      width: 100%;
+      height: 340px;
+      background: var(--paper);
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12), 0 8px 20px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    .mstep {
+      display: none;
+      padding: 18px 20px;
+      flex-direction: column;
+      box-sizing: border-box;
+      animation: mstepFadeIn 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .mstep.is-active {
+      display: flex;
+      height: 100%;
+    }
+    @keyframes mstepFadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .mstep-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--chief-green-dark);
+      margin-bottom: 4px;
+    }
+    
+    .mstep-headline {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+    
+    .mstep-visual {
+      flex: 1;
+      min-height: 0;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+    }
+    .mstep-visual > * { width: 100%; }
+    
+    .mstep-caption {
+      font-size: 12px;
+      color: var(--ink-muted);
+      line-height: 1.4;
+    }
+    
+    /* Step 1: Slack message visual */
+    .mstep-slack-msg {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 22px 20px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .mstep-slack-rail {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: white;
+      border: 1px solid var(--line);
+      padding: 7px;
+      box-sizing: border-box;
+    }
+    .mstep-slack-body { min-width: 0; }
+    .mstep-slack-author {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .mstep-slack-name {
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 14px;
+    }
+    .mstep-slack-tag {
+      background: var(--paper-tint-2);
+      color: var(--ink-soft);
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .mstep-slack-time {
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+    .mstep-slack-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .mstep-slack-preview {
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    
+    /* Step 2: Action items */
+    .mstep-action-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mstep-action {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 18px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .mstep-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .mstep-action-text {
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 500;
+      line-height: 1.45;
+    }
+    
+    /* Step 3: Email */
+    .mstep-email {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
       overflow: hidden;
     }
-    .mobile-deck-track { 
-      display: flex; 
-      width: 100%; 
-      overflow-x: auto; 
-      scroll-snap-type: x mandatory; 
-      scrollbar-width: none; 
-      align-items: flex-start;
-      transition: height 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    .mstep-email-meta {
+      padding: 14px 18px;
+      background: var(--paper-tint);
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 12px;
+      color: var(--ink-soft);
     }
-    .mobile-deck-track::-webkit-scrollbar { display: none; }
-    .mobile-slide { flex: 0 0 100%; min-width: 100%; scroll-snap-align: start; display: flex; flex-direction: column; padding: 20px 18px 24px; }
-    .mobile-slide-step { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--chief-green-dark); background: var(--chief-mint); padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; align-self: flex-start; }
-    .mobile-slide h2 { font-family: var(--font-display); font-weight: 600; font-size: 24px; line-height: 1.2; color: var(--ink); margin-bottom: 8px; letter-spacing: -0.01em; }
-    .mobile-slide p.summary { font-size: 14px; color: var(--ink-muted); line-height: 1.5; margin-bottom: 18px; }
-    .mobile-card { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 14px; }
-    .mobile-card.is-tinted { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-color: #a7f3d0; }
-    .mobile-card .card-head { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--line-soft); }
-    .mobile-card.is-tinted .card-head { border-bottom-color: rgba(16,185,129,0.2); }
-    .mobile-card .card-head-icon { width: 28px; height: 28px; border-radius: 7px; background: white; border: 1px solid var(--line); display: grid; place-items: center; padding: 4px; }
-    .mobile-card .card-head-icon [data-lucide] { width: 14px; height: 14px; color: white; }
-    .mobile-card .card-head-title { font-weight: 700; font-size: 14px; color: var(--ink); }
-    .mobile-card .card-head-meta { font-size: 11px; color: var(--ink-muted); margin-top: 1px; }
-    .mobile-card .card-body { font-size: 13px; color: var(--ink-soft); line-height: 1.55; }
-    .mobile-card .card-body p { margin-bottom: 8px; }
-    .mobile-card .card-body p:last-child { margin-bottom: 0; }
-    .mobile-card .card-action-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--line-soft); margin-top: 8px; }
-    .mobile-card .card-action-row:first-child { border-top: none; margin-top: 0; padding-top: 0; }
-    .mobile-card .card-action-pill { font-size: 9px; padding: 2px 7px; border-radius: 999px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-    .mobile-card .card-action-pill.overdue { background: #fee2e2; color: #b91c1c; }
-    .mobile-card .card-action-pill.done { background: #d1fae5; color: #065f46; }
-    .mobile-card .agenda { background: var(--paper-tint); border-left: 3px solid var(--chief-green); border-radius: 3px; padding: 10px 12px; margin: 10px 0; }
-    .mobile-card .agenda-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink); margin-bottom: 6px; font-family: var(--font-display); }
-    .mobile-card .agenda ol { padding-left: 16px; font-size: 12px; }
-    .mobile-card .agenda li { padding: 2px 0; color: var(--ink-soft); }
-    .mobile-card .agenda li b { color: var(--ink); }
-    .mobile-deck-dots { display: flex; justify-content: center; gap: 6px; padding: 14px 0 18px; background: var(--paper); }
-    .mobile-deck-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); transition: all 200ms ease; }
-    .mobile-deck-dot.is-active { background: var(--chief-green); width: 22px; border-radius: 4px; }
-    .mobile-nav-hint { display: none; }
-    .mobile-sent-banner { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #6ee7b7; border-radius: 11px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-    .mobile-sent-banner .icon { width: 26px; height: 26px; border-radius: 50%; background: var(--chief-green); display: grid; place-items: center; }
-    .mobile-sent-banner .icon [data-lucide] { width: 13px; height: 13px; color: white; stroke-width: 3; }
-    .mobile-sent-banner strong { display: block; font-size: 12px; color: var(--chief-green-dark); font-family: var(--font-display); }
-    .mobile-sent-banner span { font-size: 11px; color: var(--ink-soft); }
+    .mstep-email-meta > div { padding: 2px 0; }
+    .mstep-email-meta .lbl {
+      color: var(--ink-muted);
+      font-weight: 500;
+      display: inline-block;
+      min-width: 42px;
+    }
+    .mstep-email-subject {
+      padding: 14px 18px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .mstep-email-body {
+      padding: 16px 18px 20px;
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+    
+    /* Sent confirmation (steps 4 & 7) */
+    .mstep-sent {
+      width: 100%;
+      padding: 32px 24px;
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border: 1px solid #6ee7b7;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      box-shadow: 0 12px 30px rgba(16, 185, 129, 0.15);
+    }
+    .mstep-sent-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--chief-green);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    }
+    .mstep-sent-icon svg { width: 30px; height: 30px; }
+    .mstep-sent-text strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--chief-green-dark);
+      margin-bottom: 4px;
+    }
+    .mstep-sent-text span {
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+    
+    /* Step 5: Overdue */
+    .mstep-overdue {
+      width: 100%;
+      background: var(--chief-mint);
+      border: 1.5px solid var(--chief-green);
+      border-radius: 14px;
+      padding: 22px 20px;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.12);
+    }
+    .mstep-overdue-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .mstep-overdue-info { flex: 1; min-width: 0; }
+    .mstep-overdue-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .mstep-overdue-sub {
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+    .mstep-overdue-pill {
+      font-size: 10px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #fee2e2;
+      color: #b91c1c;
+      flex-shrink: 0;
+    }
+    
+    /* Step 6: Slack DM */
+    .mstep-slack-dm {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .mstep-slack-dm-head {
+      padding: 14px 18px;
+      background: var(--slack-purple);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .mstep-slack-dm-head .dm-tag {
+      font-size: 10px;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+    .mstep-slack-dm-body { padding: 18px 18px 20px; }
+    .mstep-slack-dm-author {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--ink);
+    }
+    .mstep-slack-dm-author strong { font-weight: 700; }
+    .mstep-slack-dm-author .dm-draft-tag {
+      background: var(--paper-tint-2);
+      color: var(--ink-soft);
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .mstep-slack-dm-text {
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+    
+    /* Step 8: Final CTA */
+    .mstep.is-final {
+      text-align: center;
+      align-items: center;
+      padding: 24px 20px;
+    }
+    .mstep-logo {
+      width: 42px;
+      height: 42px;
+      margin-bottom: 12px;
+    }
+    .mstep-final-headline {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .mstep-final-headline em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--chief-green-dark);
+    }
+    .mstep-final-caption {
+      font-size: 12px;
+      color: var(--ink-muted);
+      line-height: 1.45;
+      margin-bottom: 16px;
+      max-width: 260px;
+    }
+    .mstep-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 24px 9px;
+      background: var(--chief-green);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.25;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    .mstep-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+    }
+    .mstep-restart {
+      margin-top: 14px;
+      background: transparent;
+      border: none;
+      color: var(--ink-muted);
+      font-family: var(--font-body);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 8px 12px;
+    }
+    .mstep-restart:hover { color: var(--ink); }
+    
+    /* Controls below the frame */
+    .mobile-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 4px 4px;
+      gap: 16px;
+    }
+    .mobile-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .mobile-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      transition: all 220ms ease;
+    }
+    .mobile-dot.is-active {
+      background: var(--chief-green);
+      width: 22px;
+      border-radius: 4px;
+    }
+    .mobile-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 10px 14px 8px;
+      background: transparent;
+      color: var(--ink-muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.25;
+      cursor: pointer;
+      transition: all 160ms ease;
+    }
+    .mobile-back:hover { color: var(--ink); border-color: var(--ink-faint); }
+    .mobile-back.is-hidden { opacity: 0; pointer-events: none; visibility: hidden; }
+    .mobile-next {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 10px 16px 8px;
+      background: var(--ink);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.25;
+      cursor: pointer;
+      transition: transform 160ms ease, opacity 160ms ease;
+    }
+    .mobile-next:hover { transform: translateY(-1px); }
+    .mobile-next.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 </style>
 </head>
@@ -1128,205 +1529,166 @@
 </div><!-- /.stage -->
 </div><!-- /.canvas -->
 
-<!-- ============ MOBILE SWIPE DECK ============ -->
-<div class="mobile-deck">
-  <div class="mobile-deck-track" id="mobile-track">
-
-    <div class="mobile-slide">
-      <span class="mobile-slide-step">Step 1 of 5</span>
-      <h2>A meeting wraps. Chief notices.</h2>
-      <p class="summary">Right after your Arthropic discovery call, Chief drops a summary in Slack with the action items it identified.</p>
-      <div class="mobile-card">
-        <div class="card-head">
-          <div class="card-head-icon"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
-          <div>
-            <div class="card-head-title">Chief <span style="background:#f1f5f9;color:#334155;font-size:9px;padding:1px 4px;border-radius:3px;font-weight:600;margin-left:4px;">APP</span></div>
-            <div class="card-head-meta">2:47 PM · Today</div>
+<!-- ============ MOBILE TAP-THROUGH ============ -->
+<div class="mobile-deck" id="mobile-deck">
+  <div class="mobile-frame" id="mobile-frame">
+    
+    <!-- Step 1: Meeting just wrapped -->
+    <div class="mstep is-active" data-step="1">
+      <div class="mstep-eyebrow">Meeting just wrapped</div>
+      <h2 class="mstep-headline">Chief notices.</h2>
+      <div class="mstep-visual"><div class="mstep-slack-msg">
+        <div class="mstep-slack-rail">
+          <div class="mstep-slack-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+        </div>
+        <div class="mstep-slack-body">
+          <div class="mstep-slack-author">
+            <span class="mstep-slack-name">Chief</span>
+            <span class="mstep-slack-tag">APP</span>
+            <span class="mstep-slack-time">2:47 PM</span>
           </div>
+          <div class="mstep-slack-title">Meeting Followup: Arthropic Demo</div>
+          <div class="mstep-slack-preview">2 action items identified · 1 commitment to track · next steps ready</div>
         </div>
-        <div class="card-body">
-          <p style="font-weight:600;color:var(--ink);">📝 Meeting Followup: Arthropic Demo</p>
-          <p>2 action items identified.</p>
-        </div>
-      </div>
+      </div></div>
+      <p class="mstep-caption">A summary drops in Slack the moment your discovery call ends.</p>
     </div>
 
-    <div class="mobile-slide">
-      <span class="mobile-slide-step">Step 2 of 5</span>
-      <h2>Tap in. Action items waiting.</h2>
-      <p class="summary">Inside Chief, the meeting's action items are ready to execute. No copy-paste, no rewriting.</p>
-      <div class="mobile-card">
-        <div class="card-head">
-          <div class="card-head-icon" style="background:#eef2ff;"><i data-lucide="calendar" style="color:#4338ca !important;"></i></div>
-          <div>
-            <div class="card-head-title">Arthropic Demo: Discovery Followup</div>
-            <div class="card-head-meta">Wed, May 20 · 22h ago</div>
-          </div>
+    <!-- Step 2: Action items identified -->
+    <div class="mstep" data-step="2">
+      <div class="mstep-eyebrow">Inside Chief</div>
+      <h2 class="mstep-headline">2 things to follow up on.</h2>
+      <div class="mstep-visual"><div class="mstep-action-list">
+        <div class="mstep-action">
+          <div class="mstep-checkbox"></div>
+          <div class="mstep-action-text">Schedule technical demo with Kat and Jared</div>
         </div>
-        <div class="card-body">
-          <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px;font-family:var(--font-display);">Action Items · 2</div>
-          <div style="padding:10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;">
-            <div style="font-size:13px;color:var(--ink);">Schedule technical demo with Kat and Jared</div>
-            <div style="margin-top:8px;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;background:var(--chief-mint);border:1px solid var(--chief-green);border-radius:5px;color:var(--chief-green-dark);font-size:11px;font-weight:600;">
-              <i data-lucide="message-square" style="width:11px;height:11px;"></i> Execute with Chief
-            </div>
-          </div>
-          <div style="padding:10px;border:1px solid var(--line);border-radius:8px;">
-            <div style="font-size:13px;color:var(--ink);">Review action items in dashboard</div>
-            <div style="margin-top:8px;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;background:var(--chief-mint);border:1px solid var(--chief-green);border-radius:5px;color:var(--chief-green-dark);font-size:11px;font-weight:600;">
-              <i data-lucide="message-square" style="width:11px;height:11px;"></i> Execute with Chief
-            </div>
-          </div>
+        <div class="mstep-action">
+          <div class="mstep-checkbox"></div>
+          <div class="mstep-action-text">Review action items in dashboard</div>
         </div>
-      </div>
+      </div></div>
+      <p class="mstep-caption">No copy-paste, no notes app. Chief already pulled them from the call.</p>
     </div>
 
-    <div class="mobile-slide">
-      <span class="mobile-slide-step">Step 3 of 5</span>
-      <h2>The invite, drafted.</h2>
-      <p class="summary">Chief writes the email to Kat and Jared, picks a time, fills in the agenda. You review and approve.</p>
-      <div class="mobile-card is-tinted">
-        <div class="card-head">
-          <div class="card-head-icon" style="background:white;border:1px solid #a7f3d0;padding:4px;"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
-          <div>
-            <div class="card-head-title" style="color:var(--chief-green-dark);">Chief</div>
-            <div class="card-head-meta">Draft ready for review</div>
-          </div>
+    <!-- Step 3: Chief drafts the email -->
+    <div class="mstep" data-step="3">
+      <div class="mstep-eyebrow">Chief drafted this</div>
+      <h2 class="mstep-headline">The invite, written.</h2>
+      <div class="mstep-visual"><div class="mstep-email">
+        <div class="mstep-email-meta">
+          <div><span class="lbl">To</span> Kat Rivera, Jared Chen</div>
+          <div><span class="lbl">When</span> Tue, May 26 · 10:00 AM PT</div>
         </div>
-        <div class="card-body">
-          <p style="margin-bottom:0;">I drafted a calendar invite to Kat and Jared based on yesterday's discovery call commitment.</p>
-        </div>
-      </div>
-      <div class="mobile-card">
-        <div style="font-size:11px;color:var(--ink-muted);margin-bottom:6px;"><b>To</b> · Kat Rivera, Jared Chen</div>
-        <div style="font-size:11px;color:var(--ink-muted);margin-bottom:10px;"><b>When</b> · Tue, May 26 · 10:00 AM PT</div>
-        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:8px;font-family:var(--font-display);">Technical Demo — Arthropic × Chief</div>
-        <div class="card-body">
-          <p>Hi Kat and Jared, great chatting yesterday. Here's a hold for the technical demo we discussed.</p>
-          <div class="agenda">
-            <div class="agenda-title">Agenda · 45 minutes</div>
-            <ol>
-              <li><b>Intro & goals</b> (5 min)</li>
-              <li><b>Product walkthrough</b> (20 min)</li>
-              <li><b>Use-case deep dive</b> (10 min)</li>
-              <li><b>Q&A and next steps</b> (10 min)</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-      <button style="width:100%;padding:13px;border:none;border-radius:9px;background:var(--chief-green);color:white;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,0.25);" onclick="mobileMarkSent('mobile-sent-3')">
-        <i data-lucide="check" style="width:14px;height:14px;stroke-width:2.5;"></i> Approve &amp; Send
-      </button>
-      <div id="mobile-sent-3" class="mobile-sent-banner" style="display:none;">
-        <div class="icon"><i data-lucide="check"></i></div>
-        <div>
-          <strong>Sent!</strong>
-          <span>Invite delivered to Kat and Jared.</span>
-        </div>
-      </div>
+        <div class="mstep-email-subject">Technical Demo — Arthropic × Chief</div>
+        <div class="mstep-email-body">Hi Kat and Jared, great chatting yesterday. Here's a hold for the technical demo we discussed...</div>
+      </div></div>
+      <p class="mstep-caption">Time picked, agenda included, tone matched. Ready to send.</p>
     </div>
 
-    <div class="mobile-slide">
-      <span class="mobile-slide-step">Step 4 of 5</span>
-      <h2>See what's slipping. Act on it.</h2>
-      <p class="summary">Chief surfaces overdue commitments across your team. Tap any to follow up — Chief drafts the message.</p>
-      <div class="mobile-card">
-        <div class="card-head">
-          <div class="card-head-icon" style="background:var(--chief-mint);"><i data-lucide="check-circle-2" style="color:var(--chief-green-dark) !important;"></i></div>
-          <div>
-            <div class="card-head-title">Open Action Items</div>
-            <div class="card-head-meta">5 items · last 7 days</div>
-          </div>
+    <!-- Step 4: Tap approve, invite sent -->
+    <div class="mstep" data-step="4">
+      <div class="mstep-eyebrow">One tap</div>
+      <h2 class="mstep-headline">Approve. Done.</h2>
+      <div class="mstep-visual"><div class="mstep-sent">
+        <div class="mstep-sent-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
         </div>
-        <div class="card-body" style="padding:0;">
-          <div style="padding:10px 12px;background:var(--chief-mint);border:1.5px solid var(--chief-green);border-radius:8px;margin-bottom:8px;cursor:pointer;" onclick="mobileScrollToSlide(4)">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-              <div style="flex:1;">
-                <div style="font-size:13px;font-weight:500;color:var(--ink);">Send proposal — Globex Industries</div>
-                <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Owner: Taylor Smith</div>
-              </div>
-              <span class="card-action-pill overdue">Overdue</span>
-            </div>
-          </div>
-          <div class="card-action-row">
-            <div>
-              <div style="font-size:13px;font-weight:500;color:var(--ink);">Update CRM stage — Acme Co.</div>
-              <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Owner: Marcus Webb · due tomorrow</div>
-            </div>
-          </div>
-          <div class="card-action-row">
-            <div>
-              <div style="font-size:13px;font-weight:500;color:var(--ink);">Share pricing one-pager — Initech</div>
-              <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Owner: Priya Shah · due Friday</div>
-            </div>
-          </div>
-          <div class="card-action-row" style="opacity:0.55;">
-            <div>
-              <div style="font-size:13px;font-weight:500;color:var(--ink);text-decoration:line-through;">Schedule technical demo with Kat and Jared</div>
-              <div style="font-size:10px;color:var(--ink-muted);margin-top:2px;">Executed by Chief · 2m ago</div>
-            </div>
-            <span class="card-action-pill done">Done</span>
-          </div>
+        <div class="mstep-sent-text">
+          <strong>Sent</strong>
+          <span>Invite delivered to Kat and Jared. Added to your calendar.</span>
         </div>
-      </div>
+      </div></div>
+      <p class="mstep-caption">No drafting from scratch. No "let me get back to you on that."</p>
     </div>
 
-    <div class="mobile-slide">
-      <span class="mobile-slide-step">Step 5 of 5</span>
-      <h2>Follow up. Without the awkward.</h2>
-      <p class="summary">Chief drafts a friendly nudge to Taylor about the overdue Globex proposal. You approve, it sends.</p>
-      <div class="mobile-card is-tinted">
-        <div class="card-head">
-          <div class="card-head-icon" style="background:white;border:1px solid #a7f3d0;padding:4px;"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
-          <div>
-            <div class="card-head-title" style="color:var(--chief-green-dark);">Chief</div>
-            <div class="card-head-meta">Draft ready for review</div>
+    <!-- Step 5: Dashboard shows overdue commitments -->
+    <div class="mstep" data-step="5">
+      <div class="mstep-eyebrow">Chief's watching</div>
+      <h2 class="mstep-headline">Something's slipping.</h2>
+      <div class="mstep-visual"><div class="mstep-overdue">
+        <div class="mstep-overdue-row">
+          <div class="mstep-overdue-info">
+            <div class="mstep-overdue-title">Send proposal — Globex Industries</div>
+            <div class="mstep-overdue-sub">Owner: Taylor Smith · 3 days overdue</div>
           </div>
+          <span class="mstep-overdue-pill">Overdue</span>
         </div>
-        <div class="card-body">
-          <p style="margin-bottom:0;">Taylor committed to sending the Globex proposal during your 5/16 pricing call. It's 3 days overdue. Here's a friendly nudge.</p>
-        </div>
-      </div>
-      <div class="mobile-card" style="padding:0;overflow:hidden;">
-        <div style="background:var(--slack-purple);color:white;padding:10px 14px;display:flex;align-items:center;gap:8px;">
-          <i data-lucide="message-circle" style="width:13px;height:13px;"></i>
-          <span style="font-weight:700;font-size:13px;font-family:var(--font-display);">@taylor</span>
-          <span style="font-size:10px;opacity:0.7;margin-left:auto;">Direct message</span>
-        </div>
-        <div style="padding:14px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-            <div style="width:26px;height:26px;border-radius:5px;background:white;border:1px solid var(--line);display:grid;place-items:center;padding:4px;"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
-            <div>
-              <div style="font-size:12px;font-weight:700;color:var(--ink);">Chief <span style="background:#f1f5f9;color:#334155;font-size:8px;padding:1px 4px;border-radius:3px;font-weight:600;">DRAFT</span></div>
-              <div style="font-size:10px;color:var(--ink-muted);">For Abby · pending approval</div>
-            </div>
+        <div class="mstep-overdue-row" style="margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(16,185,129,0.25);">
+          <div class="mstep-overdue-info">
+            <div class="mstep-overdue-title">Demo agenda — Initech</div>
+            <div class="mstep-overdue-sub">Owner: Priya Shah · due tomorrow</div>
           </div>
-          <div style="font-size:13px;color:var(--ink-soft);line-height:1.55;">Hey Taylor — circling back on the Globex proposal. Where are we on getting it out the door? Happy to jump on a quick call if there's anything blocking. Just want to make sure Globex doesn't lose momentum before tomorrow's stage gate review. 🙏</div>
+          <span class="mstep-overdue-pill" style="background: #fef3c7; color: #92400e;">Due soon</span>
         </div>
-      </div>
-      <button style="width:100%;padding:13px;border:none;border-radius:9px;background:var(--chief-green);color:white;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(16,185,129,0.25);" onclick="mobileMarkSent('mobile-sent-5')">
-        <i data-lucide="check" style="width:14px;height:14px;stroke-width:2.5;"></i> Approve &amp; Send
-      </button>
-      <div id="mobile-sent-5" class="mobile-sent-banner" style="display:none;">
-        <div class="icon"><i data-lucide="check"></i></div>
-        <div>
-          <strong>Sent!</strong>
-          <span>Message delivered to @taylor.</span>
+      </div></div>
+      <p class="mstep-caption">Chief tracks team commitments across every call, not just yours.</p>
+    </div>
+
+    <!-- Step 6: Chief drafts followup to teammate -->
+    <div class="mstep" data-step="6">
+      <div class="mstep-eyebrow">Chief drafted this</div>
+      <h2 class="mstep-headline">A nudge to Taylor.</h2>
+      <div class="mstep-visual"><div class="mstep-slack-dm">
+        <div class="mstep-slack-dm-head">
+          <span>@taylor</span>
+          <span class="dm-tag">Direct message</span>
         </div>
-      </div>
+        <div class="mstep-slack-dm-body">
+          <div class="mstep-slack-dm-author">
+            <strong>Chief</strong>
+            <span class="dm-draft-tag">DRAFT</span>
+          </div>
+          <div class="mstep-slack-dm-text">Hey Taylor — circling back on the Globex proposal. Where are we on getting it out the door? Happy to jump on a quick call if anything's blocking. 🙏</div>
+        </div>
+      </div></div>
+      <p class="mstep-caption">Friendly tone, not punitive. Sent on your behalf, for your review.</p>
+    </div>
+
+    <!-- Step 7: Approve, message sent -->
+    <div class="mstep" data-step="7">
+      <div class="mstep-eyebrow">One tap, again</div>
+      <h2 class="mstep-headline">Momentum kept.</h2>
+      <div class="mstep-visual"><div class="mstep-sent">
+        <div class="mstep-sent-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="mstep-sent-text">
+          <strong>Sent to @taylor</strong>
+          <span>Chief will surface her reply when it arrives.</span>
+        </div>
+      </div></div>
+      <p class="mstep-caption">No awkward followups. No deals quietly stalling.</p>
+    </div>
+
+    <!-- Step 8: Recap + CTA -->
+    <div class="mstep is-final" data-step="8">
+      <div class="mstep-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+      <h2 class="mstep-headline mstep-final-headline">Run AI revenue plays.<br/><em>Without prompting.</em></h2>
+      <p class="mstep-final-caption">Chief turns meetings into action — drafts ready for one tap, deals that don't slip, no notes app required.</p>
+      <a href="https://account.getchief.com/" class="mstep-cta">Try Chief Free</a>
+      <button class="mstep-restart" onclick="mobileRestart()">Restart demo</button>
     </div>
 
   </div>
-  <div class="mobile-nav-hint">
-    <i data-lucide="chevrons-right" style="width:11px;height:11px;"></i>
-    Swipe to continue
-  </div>
-  <div class="mobile-deck-dots" id="mobile-dots">
-    <div class="mobile-deck-dot is-active"></div>
-    <div class="mobile-deck-dot"></div>
-    <div class="mobile-deck-dot"></div>
-    <div class="mobile-deck-dot"></div>
-    <div class="mobile-deck-dot"></div>
+
+  <div class="mobile-controls">
+    <button class="mobile-back is-hidden" id="mobile-back" onclick="mobileBack(event)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Back
+    </button>
+    <div class="mobile-dots" id="mobile-dots">
+      <div class="mobile-dot is-active"></div>
+      <div class="mobile-dot"></div>
+      <div class="mobile-dot"></div>
+      <div class="mobile-dot"></div>
+      <div class="mobile-dot"></div>
+      <div class="mobile-dot"></div>
+      <div class="mobile-dot"></div>
+      <div class="mobile-dot"></div>
+    </div>
+    <button class="mobile-next" id="mobile-next" onclick="mobileNext(event)">
+      Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
   </div>
 </div>
 
@@ -1381,26 +1743,40 @@
 };
 
   // Detect iframe embedding — auto-switch to embedded styling
-  if (window.self !== window.top) {
+  const isInIframe = window.self !== window.top;
+  if (isInIframe) {
     document.body.classList.remove('standalone');
     document.body.classList.add('embedded');
-    
-    // Report height to parent window so it can resize the iframe
-    let lastHeight = 0;
-    function postHeight() {
-      const wrapper = document.querySelector('.embed-wrapper');
-      if (!wrapper) return;
-      const h = Math.ceil(wrapper.getBoundingClientRect().height);
-      if (h !== lastHeight && h > 0) {
-        lastHeight = h;
-        window.parent.postMessage({ type: 'chief-demo-height', height: h }, '*');
-      }
-    }
-    // Post height frequently during interactions
-    setInterval(postHeight, 200);
-    window.addEventListener('load', postHeight);
-    window.addEventListener('resize', postHeight);
   }
+  
+  // Always report height (works whether in iframe or not — no-op if not embedded)
+  let lastHeight = 0;
+  function postHeight() {
+    if (!isInIframe) return;
+    // Measure the actual content (mobile-slide or wrapper)
+    const mobileTrack = document.getElementById('mobile-track');
+    const wrapper = document.querySelector('.embed-wrapper');
+    if (!wrapper) return;
+    let h;
+    if (window.innerWidth <= 820 && mobileTrack) {
+      // Mobile: measure current visible slide
+      const slides = mobileTrack.querySelectorAll('.mobile-slide');
+      const slideWidth = mobileTrack.clientWidth || window.innerWidth;
+      const idx = Math.round(mobileTrack.scrollLeft / slideWidth);
+      const current = slides[idx] || slides[0];
+      // Slide content + dots (~44px)
+      h = current.scrollHeight + 44;
+    } else {
+      h = Math.ceil(wrapper.getBoundingClientRect().height);
+    }
+    if (Math.abs(h - lastHeight) > 2 && h > 0) {
+      lastHeight = h;
+      window.parent.postMessage({ type: 'chief-demo-height', height: h }, '*');
+    }
+  }
+  setInterval(postHeight, 150);
+  window.addEventListener('load', () => setTimeout(postHeight, 100));
+  window.addEventListener('resize', postHeight);
 
   function refreshIcons() {
     document.querySelectorAll('i[data-lucide]').forEach(el => {
@@ -1593,49 +1969,45 @@
     if (initial) scheduleZoom(initial);
   }, 100);
 
-  // ===== MOBILE SWIPE DECK =====
-  const mobileTrack = document.getElementById('mobile-track');
-  const mobileDots = document.querySelectorAll('.mobile-deck-dot');
-
-  function syncMobileHeight() {
-    if (!mobileTrack) return;
-    const slides = mobileTrack.querySelectorAll('.mobile-slide');
-    const slideWidth = mobileTrack.clientWidth;
-    const idx = Math.round(mobileTrack.scrollLeft / slideWidth);
-    const current = slides[idx];
-    if (current) {
-      // Temporarily remove height constraint to measure natural height
-      current.style.height = 'auto';
-      const naturalHeight = current.scrollHeight;
-      mobileTrack.style.height = naturalHeight + 'px';
-    }
+  // ===== MOBILE TAP-THROUGH =====
+  let mobileStep = 0;
+  const TOTAL_STEPS = 8;
+  
+  function mobileGoToStep(idx) {
+    if (idx < 0 || idx >= TOTAL_STEPS) return;
+    mobileStep = idx;
+    
+    document.querySelectorAll('.mstep').forEach((el, i) => {
+      el.classList.toggle('is-active', i === idx);
+    });
+    document.querySelectorAll('.mobile-dot').forEach((d, i) => {
+      d.classList.toggle('is-active', i === idx);
+    });
+    
+    const nextBtn = document.getElementById('mobile-next');
+    if (nextBtn) nextBtn.classList.toggle('is-hidden', idx === TOTAL_STEPS - 1);
+    const backBtn = document.getElementById('mobile-back');
+    if (backBtn) backBtn.classList.toggle('is-hidden', idx === 0);
   }
   
-  if (mobileTrack) {
-    mobileTrack.addEventListener('scroll', () => {
-      const slideWidth = mobileTrack.clientWidth;
-      const idx = Math.round(mobileTrack.scrollLeft / slideWidth);
-      mobileDots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
-      syncMobileHeight();
+  function mobileNext(e) {
+    if (e) e.stopPropagation();
+    if (mobileStep < TOTAL_STEPS - 1) mobileGoToStep(mobileStep + 1);
+  }
+  
+  function mobileBack(e) {
+    if (e) e.stopPropagation();
+    if (mobileStep > 0) mobileGoToStep(mobileStep - 1);
+  }
+  
+  function mobileRestart() { mobileGoToStep(0); }
+  
+  const mobileFrameEl = document.getElementById('mobile-frame');
+  if (mobileFrameEl) {
+    mobileFrameEl.addEventListener('click', (e) => {
+      if (e.target.closest('.mstep-cta') || e.target.closest('.mstep-restart')) return;
+      mobileNext();
     });
-    // Initial sync after load
-    requestAnimationFrame(syncMobileHeight);
-    // Re-sync on resize and on font load
-    window.addEventListener('resize', syncMobileHeight);
-    if (document.fonts) {
-      document.fonts.ready.then(syncMobileHeight);
-    }
-  }
-
-  function mobileMarkSent(id) {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'flex';
-    refreshIcons();
-    requestAnimationFrame(syncMobileHeight);
-  }
-  function mobileScrollToSlide(idx) {
-    if (!mobileTrack) return;
-    mobileTrack.scrollTo({ left: mobileTrack.clientWidth * idx, behavior: 'smooth' });
   }
 </script>
 
