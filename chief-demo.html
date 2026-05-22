@@ -390,7 +390,7 @@
 
   /* MOBILE */
   .mobile-deck { display: none; }
-  @media (max-width: 640px) {
+  @media (max-width: 820px) {
     body.standalone { padding: 12px; place-items: start center !important; }
     .embed-wrapper { 
       aspect-ratio: auto !important; 
@@ -1384,6 +1384,22 @@
   if (window.self !== window.top) {
     document.body.classList.remove('standalone');
     document.body.classList.add('embedded');
+    
+    // Report height to parent window so it can resize the iframe
+    let lastHeight = 0;
+    function postHeight() {
+      const wrapper = document.querySelector('.embed-wrapper');
+      if (!wrapper) return;
+      const h = Math.ceil(wrapper.getBoundingClientRect().height);
+      if (h !== lastHeight && h > 0) {
+        lastHeight = h;
+        window.parent.postMessage({ type: 'chief-demo-height', height: h }, '*');
+      }
+    }
+    // Post height frequently during interactions
+    setInterval(postHeight, 200);
+    window.addEventListener('load', postHeight);
+    window.addEventListener('resize', postHeight);
   }
 
   function refreshIcons() {
