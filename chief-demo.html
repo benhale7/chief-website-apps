@@ -45,12 +45,22 @@
     background: #0a1a1c; display: grid; place-items: center; padding: 24px; min-height: 100vh;
   }
   /* iframe-friendly: transparent background, no chrome */
-  body.embedded {
-    background: transparent; display: block; padding: 0; min-height: auto;
-    overflow: hidden; touch-action: pan-y;
+  /* When embedded as iframe: no scrolling whatsoever */
+  html.embedded-html, body.embedded {
+    overflow: hidden !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: auto;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    display: block;
+  }
+  body.embedded * {
     -webkit-overflow-scrolling: auto;
   }
-  body.embedded html { overflow: hidden; }
   body.embedded .embed-wrapper {
     box-shadow: none; border-radius: 0; max-width: 100%;
   }
@@ -1678,7 +1688,7 @@
       <div class="mstep-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
       <h2 class="mstep-headline mstep-final-headline">Run AI revenue plays.<br/><em>Without prompting.</em></h2>
       <p class="mstep-final-caption">Chief turns meetings into action — drafts ready for one tap, deals that don't slip, no notes app required.</p>
-      <a href="https://account.getchief.com/" class="mstep-cta">Try Chief Free</a>
+      <a href="https://getchief.com/signup" class="mstep-cta">Try Chief Free</a>
       <button class="mstep-restart" onclick="mobileRestart()">Restart demo</button>
     </div>
 
@@ -1759,6 +1769,7 @@
   if (isInIframe) {
     document.body.classList.remove('standalone');
     document.body.classList.add('embedded');
+    document.documentElement.classList.add('embedded-html');
   }
   
   // Always report height (works whether in iframe or not — no-op if not embedded)
