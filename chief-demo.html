@@ -58,9 +58,12 @@
     margin: 0;
     display: block;
   }
-  body.embedded * {
+  body.embedded *,
+  html.embedded-html * {
     -webkit-overflow-scrolling: auto;
+    overscroll-behavior: none;
   }
+  body.embedded { overscroll-behavior: none; }
   body.embedded .embed-wrapper {
     box-shadow: none; border-radius: 0; max-width: 100%;
   }
@@ -433,6 +436,8 @@
       width: 100%;
       max-width: 480px;
       margin: 0 auto;
+      padding: 0 14px;
+      box-sizing: border-box;
       background: transparent;
     }
     
