@@ -886,7 +886,6 @@
   }
 </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@iframe-resizer/child@5"></script>
 <body class="standalone">
 <div class="embed-wrapper">
 <div class="canvas" id="canvas">
@@ -1777,32 +1776,23 @@
     document.body.classList.add('embedded');
     document.documentElement.classList.add('embedded-html');
     
-    // Forward wheel events to parent so page scrolls when scrolling over iframe
-    window.addEventListener('wheel', function(e) {
-      e.preventDefault();
-      window.parent.postMessage({ 
-        type: 'chief-demo-wheel', 
-        deltaY: e.deltaY, 
-        deltaX: e.deltaX 
-      }, '*');
-    }, { passive: false });
-    
-    // Forward touch events for mobile too
-    let touchY = 0, touchStartY = 0;
-    window.addEventListener('touchstart', function(e) {
-      touchY = e.touches[0].clientY;
-      touchStartY = touchY;
+    // === POSTMESSAGE SCROLL RELAY ===
+    // Forward wheel events to parent so the page scrolls when user scrolls over the iframe
+    window.addEventListener('wheel', (e) => {
+      window.parent.postMessage({ type: 'IFRAME_SCROLL', deltaY: e.deltaY }, '*');
     }, { passive: true });
     
-    window.addEventListener('touchmove', function(e) {
-      const newY = e.touches[0].clientY;
-      const deltaY = touchY - newY;
-      window.parent.postMessage({ 
-        type: 'chief-demo-wheel', 
-        deltaY: deltaY, 
-        deltaX: 0 
-      }, '*');
-      touchY = newY;
+    // Mobile touch swipe relay
+    let touchStartY = 0;
+    window.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    window.addEventListener('touchmove', (e) => {
+      const touchMoveY = e.touches[0].clientY;
+      const deltaY = touchStartY - touchMoveY;
+      touchStartY = touchMoveY;
+      window.parent.postMessage({ type: 'IFRAME_SCROLL', deltaY: deltaY }, '*');
     }, { passive: true });
   }
   
