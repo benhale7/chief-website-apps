@@ -134,6 +134,129 @@
     50% { opacity: 0.5; transform: scale(1.04); }
   }
 
+  /* ===== INTRO: POST-CALL CONTEXT BEAT ===== */
+  .intro-stage {
+    position: absolute; inset: 0; overflow: hidden;
+    display: flex; flex-direction: column;
+    background:
+      radial-gradient(1200px 720px at 50% -12%, #155b5f 0%, rgba(21,91,95,0) 60%),
+      linear-gradient(160deg, #0d3b3e 0%, #0a2a2d 100%);
+  }
+  .intro-callbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 26px 34px 8px; color: rgba(255,255,255,0.92);
+  }
+  .intro-callbar-title { display: flex; align-items: center; gap: 11px; font-family: var(--font-display); font-weight: 700; font-size: 21px; letter-spacing: -0.01em; }
+  .intro-callbar-dot { width: 9px; height: 9px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 0 5px rgba(239,68,68,0.18); transition: background .5s ease, box-shadow .5s ease; }
+  .intro-stage.call-ended .intro-callbar-dot { background: #64748b; box-shadow: none; }
+  .intro-callbar-timer { font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 15px; color: rgba(255,255,255,0.62); display: flex; align-items: center; gap: 7px; }
+  .intro-callbar-timer [data-lucide] { width: 15px; height: 15px; opacity: 0.7; }
+
+  .intro-tiles { flex: 1; display: flex; align-items: center; justify-content: center; gap: 26px; padding: 0 40px 64px; transition: filter .6s ease; }
+  .intro-stage.call-ended .intro-tiles { filter: brightness(0.6) saturate(0.85); }
+  .intro-tile {
+    position: relative; width: 332px; height: 206px; border-radius: 18px;
+    background: linear-gradient(160deg, #103034, #0c2427);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.32);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .intro-tile.is-you { border-color: rgba(16,185,129,0.45); box-shadow: 0 18px 40px rgba(0,0,0,0.32), 0 0 0 1px rgba(16,185,129,0.35); }
+  .intro-tile-av { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 27px; box-shadow: 0 6px 16px rgba(0,0,0,0.3); }
+  .intro-tile-name {
+    position: absolute; left: 14px; bottom: 12px; display: flex; align-items: center; gap: 7px;
+    background: rgba(8,20,22,0.7); backdrop-filter: blur(6px);
+    color: #fff; font-size: 13.5px; font-weight: 600; padding: 5px 11px 5px 9px; border-radius: 999px;
+  }
+  .intro-tile-name [data-lucide] { width: 13px; height: 13px; opacity: 0.78; }
+
+  .intro-callcard {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0.94);
+    display: flex; align-items: center; gap: 13px;
+    background: rgba(8,20,22,0.88); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 16px 22px; color: #fff;
+    font-family: var(--font-display); font-weight: 600; font-size: 18px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    opacity: 0; pointer-events: none;
+    transition: opacity .45s ease, transform .45s cubic-bezier(0.22,1,0.36,1);
+  }
+  .intro-stage.call-ended .intro-callcard { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  .intro-callcard-check { width: 34px; height: 34px; border-radius: 50%; background: var(--chief-green); display: grid; place-items: center; flex-shrink: 0; }
+  .intro-callcard-check [data-lucide] { width: 19px; height: 19px; color: #fff; }
+  .intro-callcard small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 13px; color: rgba(255,255,255,0.58); margin-top: 2px; }
+
+  /* Slack-style desktop notification toast */
+  .intro-toast {
+    position: absolute; top: 26px; right: 28px; width: 366px;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 26px 60px rgba(0,0,0,0.32), 0 6px 16px rgba(0,0,0,0.18);
+    padding: 15px 16px 16px; cursor: pointer; z-index: 6;
+    transform: translateX(440px); opacity: 0;
+    transition: transform .62s cubic-bezier(0.22,1,0.36,1), opacity .4s ease, box-shadow .2s ease;
+  }
+  .intro-toast.is-in { transform: translateX(0); opacity: 1; }
+  .intro-toast.is-clicked { transform: translateX(0) scale(0.975); box-shadow: 0 10px 26px rgba(0,0,0,0.2); }
+  .intro-toast-head { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
+  .intro-toast-logo { width: 30px; height: 30px; border-radius: 7px; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; padding: 4px; flex-shrink: 0; }
+  .intro-toast-app { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--ink); }
+  .intro-toast-app span { background: var(--paper-tint-2); color: var(--ink-soft); font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; margin-left: 6px; vertical-align: 1px; letter-spacing: 0.02em; }
+  .intro-toast-time { margin-left: auto; font-size: 12px; color: var(--ink-muted); }
+  .intro-toast-label {
+    display: inline-flex; align-items: center; gap: 6px; margin-bottom: 9px;
+    background: var(--chief-mint); color: var(--chief-green-dark); border: 1px solid var(--chief-green-soft);
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.01em; padding: 4px 9px 4px 8px; border-radius: 999px;
+  }
+  .intro-toast-label [data-lucide] { width: 12px; height: 12px; }
+  .intro-toast-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .intro-toast-title [data-lucide] { width: 15px; height: 15px; color: var(--chief-green-dark); }
+  .intro-toast-body { font-size: 13.5px; color: var(--ink-muted); }
+
+  /* automated (non-user) cursor */
+  .intro-cursor {
+    position: absolute; top: 0; left: 0; width: 30px; height: 30px; z-index: 8;
+    opacity: 0; pointer-events: none; transform: translate(700px, 648px);
+    transition: transform 1s cubic-bezier(0.4,0,0.2,1), opacity .3s ease;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.35));
+  }
+  .intro-cursor.is-visible { opacity: 1; }
+  .intro-cursor svg { width: 30px; height: 30px; display: block; }
+  .intro-cursor.is-click svg { animation: introClickPress .3s ease; }
+  @keyframes introClickPress { 50% { transform: scale(0.8); } }
+  .intro-cursor::after {
+    content: ''; position: absolute; left: 5px; top: 6px; width: 14px; height: 14px; margin: -7px 0 0 -7px;
+    border-radius: 50%; border: 2px solid var(--chief-green); opacity: 0; transform: scale(0.3);
+  }
+  .intro-cursor.is-click::after { animation: introClickRing .55s ease-out; }
+  @keyframes introClickRing {
+    0% { opacity: 0.75; transform: scale(0.3); }
+    100% { opacity: 0; transform: scale(3); }
+  }
+
+  /* ===== DESKTOP PROGRESS BAR ===== */
+  .demo-progress {
+    position: absolute; left: 16px; bottom: 16px; z-index: 9998;
+    display: flex; align-items: center; gap: 11px;
+    padding: 8px 14px 7px 13px; border-radius: 999px;
+    background: rgba(15,23,42,0.82); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.08); box-shadow: var(--shadow-lg);
+    opacity: 0; transform: translateY(6px); pointer-events: none; cursor: pointer;
+    transition: opacity .4s ease, transform .25s ease, background .2s ease;
+  }
+  .demo-progress.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .demo-progress.is-visible:hover { background: rgba(15,23,42,0.96); transform: translateY(-1px); }
+  .demo-progress.is-visible:hover .demo-progress-hint { color: #fff; }
+  .demo-progress-track { display: flex; gap: 5px; }
+  .demo-progress-seg { width: 26px; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.22); transition: background .35s ease, box-shadow .35s ease; }
+  .demo-progress-seg.is-filled { background: var(--chief-green); }
+  .demo-progress-seg.is-current { box-shadow: 0 0 0 1px rgba(16,185,129,0.45); }
+  .demo-progress-hint {
+    display: flex; align-items: center; gap: 4px; color: rgba(255,255,255,0.86);
+    font-family: var(--font-body); font-size: 11.5px; font-weight: 600; white-space: nowrap;
+    transition: color .2s ease;
+  }
+  .demo-progress-hint [data-lucide], .demo-progress-hint svg { width: 13px; height: 13px; }
+  .demo-progress.is-complete .demo-progress-hint { color: var(--chief-green); }
+
   /* SLACK */
   .slack { display: grid; grid-template-columns: 64px 280px 1fr; height: 100%; background: var(--paper); font-size: 15px; }
   .slack-rail { background: var(--slack-purple-dark); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 14px; }
@@ -428,7 +551,7 @@
       border-radius: 0;
       overflow: visible;
     }
-    .canvas, .reset-demo, .zoom-toggle { display: none !important; }
+    .canvas, .reset-demo, .zoom-toggle, .demo-progress { display: none !important; }
     
     .mobile-deck {
       display: flex;
@@ -891,8 +1014,53 @@
 <div class="canvas" id="canvas">
 <div class="stage">
 
+<!-- SCREEN 0: POST-CALL CONTEXT BEAT (auto-plays) -->
+<div class="screen is-active" id="screen-0" data-zoom="1" data-tx="0" data-ty="0">
+  <div class="camera">
+    <div class="intro-stage" id="intro-stage">
+      <div class="intro-callbar">
+        <div class="intro-callbar-title"><span class="intro-callbar-dot"></span> Arthropic Demo</div>
+        <div class="intro-callbar-timer"><i data-lucide="video"></i> 31:24</div>
+      </div>
+      <div class="intro-tiles">
+        <div class="intro-tile">
+          <div class="intro-tile-av" style="background:linear-gradient(135deg,#f472b6,#be185d);">KR</div>
+          <div class="intro-tile-name"><i data-lucide="video"></i> Kat Rivera</div>
+        </div>
+        <div class="intro-tile is-you">
+          <div class="intro-tile-av" style="background:linear-gradient(135deg,#f59e0b,#f97316);">AI</div>
+          <div class="intro-tile-name"><i data-lucide="video"></i> Abby Ingersoll (you)</div>
+        </div>
+        <div class="intro-tile">
+          <div class="intro-tile-av" style="background:linear-gradient(135deg,#60a5fa,#1d4ed8);">JC</div>
+          <div class="intro-tile-name"><i data-lucide="video"></i> Jared Chen</div>
+        </div>
+      </div>
+      <div class="intro-callcard" id="intro-callcard">
+        <div class="intro-callcard-check"><i data-lucide="check"></i></div>
+        <div>Call ended<small>Arthropic Demo · 31 min · 3 attendees</small></div>
+      </div>
+
+      <!-- Slack-style desktop notification -->
+      <div class="intro-toast" id="intro-toast" onclick="finishIntro()">
+        <div class="intro-toast-head">
+          <div class="intro-toast-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
+          <div class="intro-toast-app">Chief<span>APP</span></div>
+          <div class="intro-toast-time">2:47 PM</div>
+        </div>
+        <div class="intro-toast-label"><i data-lucide="sparkles"></i> Chief auto-generated the meeting follow-up</div>
+        <div class="intro-toast-title"><i data-lucide="file-text"></i> Meeting Followup: Arthropic Demo</div>
+        <div class="intro-toast-body">2 action items identified.</div>
+      </div>
+
+      <!-- automated clicker (not the user) -->
+      <div class="intro-cursor" id="intro-cursor"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 3.5 L6 23 L11 18.2 L14.3 25 L17.2 23.6 L13.9 17 L21 17 Z" fill="#ffffff" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+    </div>
+  </div>
+</div>
+
 <!-- SCREEN 1: SLACK -->
-<div class="screen is-active" id="screen-1" data-zoom="1.4" data-tx="-12" data-ty="24">
+<div class="screen" id="screen-1" data-zoom="1.4" data-tx="-12" data-ty="24">
   <div class="camera">
     <div class="slack">
       <div class="slack-rail">
@@ -1719,6 +1887,16 @@
   </div>
 </div>
 
+<div class="demo-progress" id="demo-progress" aria-hidden="true">
+  <div class="demo-progress-track">
+    <span class="demo-progress-seg"></span>
+    <span class="demo-progress-seg"></span>
+    <span class="demo-progress-seg"></span>
+    <span class="demo-progress-seg"></span>
+  </div>
+  <div class="demo-progress-hint" id="demo-progress-hint">Click to continue <i data-lucide="chevrons-right"></i></div>
+</div>
+
 <button class="zoom-toggle" id="zoom-toggle" onclick="toggleZoom()">
   <i data-lucide="zoom-out"></i>
   <span id="zoom-toggle-label">Zoom out</span>
@@ -1923,6 +2101,116 @@
 
   // Zoom stays put once it lands; no hover-pause
 
+  // ===== PROGRESS BAR =====
+  // Four stages: Notify -> Review -> Draft -> Sent. Both branches reach stage 3
+  // on their draft screen, and the terminal "send" fills the final stage.
+  const PROGRESS_MAP = { 'screen-1': 1, 'screen-2': 2, 'screen-3a': 3, 'screen-3b': 3, 'screen-4': 3 };
+  let demoComplete = false;
+
+  function setProgressHint(complete) {
+    const hint = document.getElementById('demo-progress-hint');
+    if (!hint) return;
+    hint.innerHTML = complete
+      ? 'Restart demo <i data-lucide="rotate-ccw"></i>'
+      : 'Click to continue <i data-lucide="chevrons-right"></i>';
+    refreshIcons();
+  }
+
+  function updateProgress(id) {
+    const bar = document.getElementById('demo-progress');
+    if (!bar) return;
+    const idx = PROGRESS_MAP[id] || 0;
+    if (idx === 0) { bar.classList.remove('is-visible', 'is-complete'); return; }
+    demoComplete = false;
+    bar.classList.add('is-visible');
+    bar.classList.remove('is-complete');
+    bar.querySelectorAll('.demo-progress-seg').forEach((seg, i) => {
+      seg.classList.toggle('is-filled', i < idx);
+      seg.classList.toggle('is-current', i === idx - 1);
+    });
+    setProgressHint(false);
+  }
+
+  function markProgressComplete() {
+    const bar = document.getElementById('demo-progress');
+    if (!bar) return;
+    demoComplete = true;
+    bar.classList.add('is-visible', 'is-complete');
+    bar.querySelectorAll('.demo-progress-seg').forEach((seg, i) => {
+      seg.classList.add('is-filled');
+      seg.classList.toggle('is-current', i === 3);
+    });
+    setProgressHint(true);
+  }
+
+  // Clickable fallback so it's obvious the demo can be advanced.
+  // Mirrors the primary action of the active screen.
+  function advanceDemo() {
+    const active = document.querySelector('.screen.is-active');
+    if (!active) return;
+    const id = active.id;
+    if (id === 'screen-1') { goTo('screen-2'); return; }
+    if (id === 'screen-2') { goTo('screen-3a'); return; }
+    if (id === 'screen-3a') {
+      const btn = document.querySelector('#screen-3a .draft-action-btn.is-approve');
+      if (btn && btn.style.pointerEvents !== 'none') markSent('sent-3a', btn);
+      return;
+    }
+    if (id === 'screen-3b') {
+      const slackConfirm = document.getElementById('slack-confirm');
+      const actionModal = document.getElementById('action-modal');
+      if (slackConfirm && slackConfirm.classList.contains('is-open')) { closeSlackConfirm(); goTo('screen-4'); }
+      else if (actionModal && actionModal.classList.contains('is-open')) { openSlackConfirm(); }
+      else { openActionItems(); }
+      return;
+    }
+    if (id === 'screen-4') {
+      const btn = document.querySelector('#screen-4 .draft-action-btn.is-approve');
+      if (btn && btn.style.pointerEvents !== 'none') markSent('sent-4', btn);
+      return;
+    }
+  }
+
+  // ===== INTRO: POST-CALL CONTEXT BEAT =====
+  let introTimers = [];
+  let introPlaying = false;
+  function clearIntroTimers() {
+    introTimers.forEach(t => clearTimeout(t));
+    introTimers = [];
+  }
+  function runIntro() {
+    const introScreen = document.getElementById('screen-0');
+    const toast = document.getElementById('intro-toast');
+    const cursor = document.getElementById('intro-cursor');
+    const stage = document.getElementById('intro-stage');
+    if (!introScreen || !toast || !cursor || !stage) { goTo('screen-1'); return; }
+    clearIntroTimers();
+    introPlaying = true;
+    // Reset to start state
+    document.querySelectorAll('.screen').forEach(s => { s.classList.remove('is-active'); applyZoom(s, false); });
+    introScreen.classList.add('is-active');
+    updateProgress(null);
+    stage.classList.remove('call-ended');
+    toast.classList.remove('is-in', 'is-clicked');
+    cursor.classList.remove('is-visible', 'is-click');
+    cursor.style.transform = 'translate(700px, 648px)';
+    // Timeline: call wraps -> notification slides in -> auto-cursor clicks -> open in Slack
+    introTimers.push(setTimeout(() => { stage.classList.add('call-ended'); }, 700));
+    introTimers.push(setTimeout(() => { toast.classList.add('is-in'); }, 1600));
+    introTimers.push(setTimeout(() => {
+      cursor.classList.add('is-visible');
+      cursor.style.transform = 'translate(1180px, 132px)';
+    }, 2550));
+    introTimers.push(setTimeout(() => { cursor.classList.add('is-click'); toast.classList.add('is-clicked'); }, 3650));
+    introTimers.push(setTimeout(() => { finishIntro(); }, 4080));
+  }
+  function finishIntro() {
+    if (!introPlaying) return;
+    introPlaying = false;
+    clearIntroTimers();
+    goTo('screen-1');
+  }
+
   // ===== SCREEN NAVIGATION =====
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => {
@@ -1931,6 +2219,7 @@
     });
     const target = document.getElementById(id);
     target.classList.add('is-active');
+    updateProgress(id);
     // Reset scroll
     document.querySelectorAll('#' + id + ' .draft-canvas, #' + id + ' .dash-main, #' + id + ' .chief-meetings, #' + id + ' .slack-messages').forEach(el => el.scrollTop = 0);
     // No auto-scroll needed — content fits canvas after layout compression
@@ -1947,6 +2236,8 @@
       btn.style.pointerEvents = 'none';
       btn.style.boxShadow = 'none';
     }
+    // Terminal sends end the flow on both branches -> show progress complete
+    if (id === 'sent-3a' || id === 'sent-4') markProgressComplete();
     refreshIcons();
     // Auto-scroll to keep the sent banner in view (smoothly)
     setTimeout(() => {
@@ -1985,10 +2276,25 @@
     });
     closeActionItems();
     closeSlackConfirm();
-    goTo('screen-1');
+    clearIntroTimers();
+    introPlaying = false;
+    const reducedNow = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.innerWidth > 820 && !reducedNow) {
+      runIntro();
+    } else {
+      goTo('screen-1');
+    }
     const track = document.getElementById('mobile-track');
     if (track) track.scrollTo({ left: 0, behavior: 'smooth' });
     document.querySelectorAll('.mobile-sent-banner').forEach(el => el.style.display = 'none');
+  }
+
+  const progressBarEl = document.getElementById('demo-progress');
+  if (progressBarEl) {
+    progressBarEl.addEventListener('click', () => {
+      if (demoComplete) resetDemo();
+      else advanceDemo();
+    });
   }
 
   const actionModalEl = document.getElementById('action-modal');
@@ -2010,11 +2316,19 @@
     }
   });
 
-  // Trigger initial zoom for screen 1
+  // Kick off the intro context beat (or skip straight to Slack if reduced motion / mobile)
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const introScreenEl = document.getElementById('screen-0');
+  if (introScreenEl) {
+    introScreenEl.addEventListener('click', finishIntro);
+  }
   setTimeout(() => {
-    const initial = document.querySelector('.screen.is-active');
-    if (initial) scheduleZoom(initial);
-  }, 100);
+    if (window.innerWidth <= 820 || prefersReducedMotion) {
+      goTo('screen-1');
+    } else {
+      runIntro();
+    }
+  }, 120);
 
   // ===== MOBILE TAP-THROUGH =====
   let mobileStep = 0;
