@@ -105,7 +105,6 @@
     transform: none !important; box-shadow: var(--shadow-sm) !important;
     background: var(--paper) !important; border-color: var(--line) !important;
   }
-
   .zoom-toggle {
     position: absolute; bottom: 14px; right: 130px; z-index: 9999;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.25;
@@ -117,7 +116,6 @@
   }
   .zoom-toggle:hover { transform: translateY(-1px); background: rgba(15, 23, 42, 1); }
   .zoom-toggle [data-lucide], .zoom-toggle svg { width: 13px; height: 13px; }
-
   .reset-demo {
     position: absolute; bottom: 14px; right: 14px; z-index: 9999;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.25;
@@ -133,7 +131,6 @@
     0%, 100% { opacity: 0; transform: scale(1); }
     50% { opacity: 0.5; transform: scale(1.04); }
   }
-
   /* ===== INTRO: POST-CALL CONTEXT BEAT ===== */
   .intro-stage {
     position: absolute; inset: 0; overflow: hidden;
@@ -151,7 +148,6 @@
   .intro-stage.call-ended .intro-callbar-dot { background: #64748b; box-shadow: none; }
   .intro-callbar-timer { font-family: var(--font-body); font-variant-numeric: tabular-nums; font-size: 15px; color: rgba(255,255,255,0.62); display: flex; align-items: center; gap: 7px; }
   .intro-callbar-timer [data-lucide] { width: 15px; height: 15px; opacity: 0.7; }
-
   .intro-tiles { flex: 1; display: flex; align-items: center; justify-content: center; gap: 26px; padding: 0 40px 64px; transition: filter .6s ease; }
   .intro-stage.call-ended .intro-tiles { filter: brightness(0.6) saturate(0.85); }
   .intro-tile {
@@ -169,7 +165,6 @@
     color: #fff; font-size: 13.5px; font-weight: 600; padding: 5px 11px 5px 9px; border-radius: 999px;
   }
   .intro-tile-name [data-lucide] { width: 13px; height: 13px; opacity: 0.78; }
-
   .intro-callcard {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0.94);
     display: flex; align-items: center; gap: 13px;
@@ -184,7 +179,6 @@
   .intro-callcard-check { width: 34px; height: 34px; border-radius: 50%; background: var(--chief-green); display: grid; place-items: center; flex-shrink: 0; }
   .intro-callcard-check [data-lucide] { width: 19px; height: 19px; color: #fff; }
   .intro-callcard small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 13px; color: rgba(255,255,255,0.58); margin-top: 2px; }
-
   /* Slack-style desktop notification toast */
   .intro-toast {
     position: absolute; top: 26px; right: 28px; width: 366px;
@@ -210,7 +204,6 @@
   .intro-toast-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
   .intro-toast-title [data-lucide] { width: 15px; height: 15px; color: var(--chief-green-dark); }
   .intro-toast-body { font-size: 13.5px; color: var(--ink-muted); }
-
   /* automated (non-user) cursor */
   .intro-cursor {
     position: absolute; top: 0; left: 0; width: 30px; height: 30px; z-index: 8;
@@ -231,7 +224,6 @@
     0% { opacity: 0.75; transform: scale(0.3); }
     100% { opacity: 0; transform: scale(3); }
   }
-
   /* ===== DESKTOP PROGRESS BAR ===== */
   .demo-progress {
     position: absolute; left: 16px; bottom: 16px; z-index: 9998;
@@ -256,7 +248,6 @@
   }
   .demo-progress-hint [data-lucide], .demo-progress-hint svg { width: 13px; height: 13px; }
   .demo-progress.is-complete .demo-progress-hint { color: var(--chief-green); }
-
   /* SLACK */
   .slack { display: grid; grid-template-columns: 64px 280px 1fr; height: 100%; background: var(--paper); font-size: 15px; }
   .slack-rail { background: var(--slack-purple-dark); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 14px; }
@@ -310,7 +301,6 @@
   .slack-composer-toolbar { padding: 6px 10px; border-bottom: 1px solid var(--line-soft); color: var(--ink-muted); display: flex; gap: 14px; align-items: center; }
   .slack-composer-toolbar [data-lucide] { width: 14px; height: 14px; }
   .slack-composer-input { padding: 12px 14px; color: var(--ink-muted); font-size: 14px; }
-
   /* CHIEF APP */
   .chief-app { display: grid; grid-template-columns: 68px 1fr 520px; height: 100%; background: #f5f7f8; }
   .chief-rail { background: var(--chief-teal-deep); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 6px; }
@@ -385,7 +375,6 @@
   .chief-execute-btn::after { content: ''; position: absolute; inset: -3px; border-radius: 8px; border: 2px solid var(--chief-green); opacity: 0; animation: pulse 2.2s ease-in-out infinite; pointer-events: none; }
   .chief-execute-btn:hover { background: var(--chief-mint); transform: translateY(-1px); }
   .chief-execute-btn [data-lucide] { width: 12px; height: 12px; }
-
   /* DRAFT */
   .draft-screen { display: grid; grid-template-columns: 68px 1fr; height: 100%; background: #f5f7f8; }
   .draft-canvas { overflow-y: auto; padding: 18px 48px 32px; background: linear-gradient(180deg, #f5f7f8 0%, #eef2f4 100%); }
@@ -447,7 +436,6 @@
   .draft-sent-icon [data-lucide] { width: 18px; height: 18px; color: white; stroke-width: 3; }
   .draft-sent-text strong { display: block; font-size: 15px; color: var(--chief-green-dark); margin-bottom: 2px; font-family: var(--font-display); }
   .draft-sent-text span { font-size: 13px; color: var(--ink-soft); }
-
   /* DASH */
   .dash-screen { display: grid; grid-template-columns: 68px 1fr; height: 100%; background: #f5f7f8; }
   .dash-main { overflow-y: auto; padding: 28px 32px; position: relative; }
@@ -521,12 +509,10 @@
   .dash-confirm-buttons button { padding: 11px 18px 9px; border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 600; line-height: 1.25; cursor: pointer; border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft); display: inline-flex; align-items: center; justify-content: center; }
   .dash-confirm-buttons button.is-primary { background: var(--chief-green); color: white; border-color: var(--chief-green); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); }
   .dash-confirm-buttons button.is-primary:hover { background: var(--chief-green-dark); }
-
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.15); border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(15, 23, 42, 0.25); }
-
   /* MOBILE */
   .mobile-deck { display: none; }
   
@@ -536,7 +522,6 @@
   body.embedded .mobile-frame {
     touch-action: pan-y;
   }
-
   @media (max-width: 820px) {
     body.standalone { padding: 12px; place-items: start center !important; }
     body.embedded { padding: 0; }
@@ -1013,7 +998,6 @@
 <div class="embed-wrapper">
 <div class="canvas" id="canvas">
 <div class="stage">
-
 <!-- SCREEN 0: POST-CALL CONTEXT BEAT (auto-plays) -->
 <div class="screen is-active" id="screen-0" data-zoom="1" data-tx="0" data-ty="0">
   <div class="camera">
@@ -1040,7 +1024,6 @@
         <div class="intro-callcard-check"><i data-lucide="check"></i></div>
         <div>Call ended<small>Arthropic Demo · 31 min · 3 attendees</small></div>
       </div>
-
       <!-- Slack-style desktop notification -->
       <div class="intro-toast" id="intro-toast" onclick="finishIntro()">
         <div class="intro-toast-head">
@@ -1052,13 +1035,11 @@
         <div class="intro-toast-title"><i data-lucide="file-text"></i> Meeting Followup: Arthropic Demo</div>
         <div class="intro-toast-body">2 action items identified.</div>
       </div>
-
       <!-- automated clicker (not the user) -->
       <div class="intro-cursor" id="intro-cursor"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 3.5 L6 23 L11 18.2 L14.3 25 L17.2 23.6 L13.9 17 L21 17 Z" fill="#ffffff" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
     </div>
   </div>
 </div>
-
 <!-- SCREEN 1: SLACK -->
 <div class="screen" id="screen-1" data-zoom="1.4" data-tx="-12" data-ty="24">
   <div class="camera">
@@ -1138,7 +1119,6 @@
     </div>
   </div>
 </div>
-
 <!-- SCREEN 2: MEETINGS -->
 <div class="screen" id="screen-2" data-zoom="1.45" data-tx="-32" data-ty="8">
   <div class="camera">
@@ -1309,7 +1289,6 @@
     </div>
   </div>
 </div>
-
 <!-- SCREEN 3a: EMAIL DRAFT -->
 <div class="screen" id="screen-3a" data-zoom="1.4" data-tx="14" data-ty="-14">
   <div class="camera">
@@ -1389,7 +1368,6 @@
     </div>
   </div>
 </div>
-
 <!-- SCREEN 3b: DASHBOARD -->
 <div class="screen" id="screen-3b" data-zoom="1.4" data-tx="17" data-ty="-3">
   <div class="camera">
@@ -1648,7 +1626,6 @@
     </div>
   </div>
 </div>
-
 <!-- SCREEN 4: SLACK DRAFT -->
 <div class="screen" id="screen-4" data-zoom="1.4" data-tx="14" data-ty="14">
   <div class="camera">
@@ -1705,12 +1682,10 @@
               <span>Message delivered to @taylor. Chief will notify you when she replies.</span>
             </div>
           </div>
-
           <div class="draft-bubble" style="background: var(--paper-tint); border-color: var(--line-soft);">
             <div class="draft-bubble-label" style="color: var(--ink-muted);"><i data-lucide="layers"></i> What happens next</div>
             <p style="font-size: 13px;">Chief will monitor Taylor's response and surface it in your inbox. If she doesn't reply within 24 hours, I'll send a gentle follow-up nudge.</p>
           </div>
-
           <div class="draft-bubble" style="background: var(--paper-tint); border-color: var(--line-soft);">
             <div class="draft-bubble-label" style="color: var(--ink-muted);"><i data-lucide="activity"></i> Related signals</div>
             <p style="font-size: 13px;">Globex's last engagement was 8 days ago. Their stage gate review meeting is tomorrow at 10:30 AM — keeping momentum until then.</p>
@@ -1720,10 +1695,8 @@
     </div>
   </div>
 </div>
-
 </div><!-- /.stage -->
 </div><!-- /.canvas -->
-
 <!-- ============ MOBILE TAP-THROUGH ============ -->
 <div class="mobile-deck" id="mobile-deck">
   <div class="mobile-frame" id="mobile-frame">
@@ -1748,7 +1721,6 @@
       </div></div>
       <p class="mstep-caption">A summary drops in Slack the moment your discovery call ends.</p>
     </div>
-
     <!-- Step 2: Action items identified -->
     <div class="mstep" data-step="2">
       <div class="mstep-eyebrow">Inside Chief</div>
@@ -1765,7 +1737,6 @@
       </div></div>
       <p class="mstep-caption">No copy-paste, no notes app. Chief already pulled them from the call.</p>
     </div>
-
     <!-- Step 3: Chief drafts the email -->
     <div class="mstep" data-step="3">
       <div class="mstep-eyebrow">Chief drafted this</div>
@@ -1780,7 +1751,6 @@
       </div></div>
       <p class="mstep-caption">Time picked, agenda included, tone matched. Ready to send.</p>
     </div>
-
     <!-- Step 4: Tap approve, invite sent -->
     <div class="mstep" data-step="4">
       <div class="mstep-eyebrow">One tap</div>
@@ -1796,7 +1766,6 @@
       </div></div>
       <p class="mstep-caption">No drafting from scratch. No "let me get back to you on that."</p>
     </div>
-
     <!-- Step 5: Dashboard shows overdue commitments -->
     <div class="mstep" data-step="5">
       <div class="mstep-eyebrow">Chief's watching</div>
@@ -1819,7 +1788,6 @@
       </div></div>
       <p class="mstep-caption">Chief tracks team commitments across every call, not just yours.</p>
     </div>
-
     <!-- Step 6: Chief drafts followup to teammate -->
     <div class="mstep" data-step="6">
       <div class="mstep-eyebrow">Chief drafted this</div>
@@ -1839,7 +1807,6 @@
       </div></div>
       <p class="mstep-caption">Friendly tone, not punitive. Sent on your behalf, for your review.</p>
     </div>
-
     <!-- Step 7: Approve, message sent -->
     <div class="mstep" data-step="7">
       <div class="mstep-eyebrow">One tap, again</div>
@@ -1855,18 +1822,15 @@
       </div></div>
       <p class="mstep-caption">No awkward followups. No deals quietly stalling.</p>
     </div>
-
     <!-- Step 8: Recap + CTA -->
     <div class="mstep is-final" data-step="8">
       <div class="mstep-logo"><svg viewBox="0 0 94 95" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;"><path d="M73.0827 32.4068C79.2466 32.4068 84.2435 27.3559 84.2435 21.1253C84.2435 14.8947 79.2466 9.84375 73.0827 9.84375C66.9187 9.84375 61.9219 14.8947 61.9219 21.1253C61.9219 27.3559 66.9187 32.4068 73.0827 32.4068Z" fill="#00C29F"/><path d="M29.4103 3.29854C26.9286 5.80709 25.866 9.20264 26.2087 12.4735H26.195C26.5652 16.1601 25.3518 19.9714 22.5616 22.7918C19.7714 25.6122 15.9049 26.8595 12.2166 26.4437V26.4645C9.02189 26.1596 5.71752 27.2406 3.27009 29.7145C-1.09003 34.1218 -1.09003 41.2594 3.27009 45.6667C7.63022 50.074 14.6914 50.074 19.0515 45.6667C21.5401 43.1512 22.6027 39.7487 22.2462 36.471H22.2668C21.9103 32.7983 23.1169 28.9939 25.9002 26.1804C28.6699 23.3808 32.413 22.1542 36.0327 22.5007L36.0259 22.4799C39.2891 22.8541 42.6826 21.787 45.1917 19.2576C49.5518 14.8503 49.5518 7.71275 45.1917 3.30547C40.8316 -1.10182 33.7704 -1.10182 29.4103 3.30547V3.29854Z" fill="#00C29F"/><path d="M74.9493 49.3259C72.4676 51.8344 71.405 55.23 71.7478 58.5008H71.7341C72.1043 62.1874 70.8908 65.9987 68.1006 68.8191C65.3104 71.6395 61.4439 72.8869 57.7556 72.4711V72.4919C54.561 72.187 51.2566 73.268 48.8092 75.7419C44.449 80.1492 44.449 87.2868 48.8092 91.6941C53.1693 96.1013 60.2305 96.1013 64.5906 91.6941C67.0792 89.1786 68.1418 85.7761 67.7853 82.4983H67.8059C67.4494 78.8256 68.6559 75.0212 71.4393 72.2077C74.2226 69.3943 77.9521 68.1816 81.5718 68.5281L81.5649 68.5073C84.8282 68.8815 88.2217 67.8143 90.7308 65.285C95.0909 60.8777 95.0909 53.7401 90.7308 49.3328C86.3707 44.9255 79.3094 44.9255 74.9493 49.3328V49.3259Z" fill="#00C29F"/><path d="M61.305 36.1108C62.066 35.1337 61.9837 33.7893 61.1199 32.9162C60.2561 32.043 58.9193 31.9599 57.9595 32.7291C52.3311 37.2126 44.4746 37.2126 38.8462 32.7291C37.8796 31.9599 36.5496 32.0361 35.6858 32.9162C34.8152 33.7962 34.7398 35.1406 35.5007 36.1108C39.9363 41.8 39.9363 49.7415 35.5007 55.4307L33.7183 57.2325C30.8938 60.0875 27.0616 61.3002 23.3801 60.8844V60.9052C20.1855 60.6003 16.8811 61.6813 14.4337 64.1552C10.0735 68.5625 10.0735 75.7001 14.4337 80.1074C18.7938 84.5147 25.855 84.5147 30.2151 80.1074C32.7037 77.5919 33.7663 74.1894 33.4098 70.9117H33.4304C33.0739 67.2389 34.2805 63.4345 37.0638 60.6211L38.8462 58.8194C44.4746 54.3359 52.3311 54.3359 57.9595 58.8194C58.4051 59.1728 58.9193 59.346 59.4403 59.346C60.0504 59.346 60.6537 59.1035 61.1199 58.6323C61.9905 57.7522 62.066 56.4078 61.305 55.4377C56.8695 49.7484 56.8695 41.807 61.305 36.1177V36.1108Z" fill="#00C29F"/></svg></div>
       <h2 class="mstep-headline mstep-final-headline">Run AI revenue plays.<br/><em>Without prompting.</em></h2>
       <p class="mstep-final-caption">Chief turns meetings into action — drafts ready for one tap, deals that don't slip, no notes app required.</p>
-      <a href="https://getchief.com/signup" class="mstep-cta">Try Chief Free</a>
+      <a href="https://calendar.app.google/55zzHRcviNyy7EdR7" class="mstep-cta" target="_blank" rel="noopener">Book a Process Walkthrough</a>
       <button class="mstep-restart" onclick="mobileRestart()">Restart demo</button>
     </div>
-
   </div>
-
   <div class="mobile-controls">
     <button class="mobile-back is-hidden" id="mobile-back" onclick="mobileBack(event)">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> Back
@@ -1886,7 +1850,6 @@
     </button>
   </div>
 </div>
-
 <div class="demo-progress" id="demo-progress" aria-hidden="true">
   <div class="demo-progress-track">
     <span class="demo-progress-seg"></span>
@@ -1896,7 +1859,6 @@
   </div>
   <div class="demo-progress-hint" id="demo-progress-hint">Click to continue <i data-lucide="chevrons-right"></i></div>
 </div>
-
 <button class="zoom-toggle" id="zoom-toggle" onclick="toggleZoom()">
   <i data-lucide="zoom-out"></i>
   <span id="zoom-toggle-label">Zoom out</span>
@@ -1906,7 +1868,6 @@
   Reset demo
 </button>
 </div><!-- /.embed-wrapper -->
-
 <script>
   const LUCIDE_ICONS = {
   'activity': `<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>`,
@@ -1946,32 +1907,16 @@
   'x': `<path d="M18 6 6 18"/><path d="m6 6 12 12"/>`,
   'zoom-out': `<circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/><line x1="8" x2="14" y1="11" y2="11"/>`,
 };
-
   // Detect iframe embedding — auto-switch to embedded styling
   const isInIframe = window.self !== window.top;
   if (isInIframe) {
     document.body.classList.remove('standalone');
     document.body.classList.add('embedded');
     document.documentElement.classList.add('embedded-html');
-    
-    // === POSTMESSAGE SCROLL RELAY ===
-    // Forward wheel events to parent so the page scrolls when user scrolls over the iframe
-    window.addEventListener('wheel', (e) => {
-      window.parent.postMessage({ type: 'IFRAME_SCROLL', deltaY: e.deltaY }, '*');
-    }, { passive: true });
-    
-    // Mobile touch swipe relay
-    let touchStartY = 0;
-    window.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-    
-    window.addEventListener('touchmove', (e) => {
-      const touchMoveY = e.touches[0].clientY;
-      const deltaY = touchStartY - touchMoveY;
-      touchStartY = touchMoveY;
-      window.parent.postMessage({ type: 'IFRAME_SCROLL', deltaY: deltaY }, '*');
-    }, { passive: true });
+    // NOTE: The wheel/touch scroll relay was removed on purpose. It forwarded
+    // gestures to the parent via postMessage, which caused the mobile screen to
+    // jump. The page now scrolls natively; height is still reported below so the
+    // parent can size the iframe correctly.
   }
   
   // Always report height (works whether in iframe or not — no-op if not embedded)
@@ -2002,7 +1947,6 @@
   setInterval(postHeight, 150);
   window.addEventListener('load', () => setTimeout(postHeight, 100));
   window.addEventListener('resize', postHeight);
-
   function refreshIcons() {
     document.querySelectorAll('i[data-lucide]').forEach(el => {
       const name = el.getAttribute('data-lucide');
@@ -2031,12 +1975,10 @@
     if (paths) svgEl.innerHTML = paths;
   }
   refreshIcons();
-
   // ===== CANVAS SCALING =====
   const wrapper = document.querySelector('.embed-wrapper');
   const canvas = document.getElementById('canvas');
   const CANVAS_W = 1440;
-
   function scaleCanvas() {
     if (!wrapper || !canvas) return;
     const rect = wrapper.getBoundingClientRect();
@@ -2049,12 +1991,10 @@
   if (window.ResizeObserver) {
     new ResizeObserver(scaleCanvas).observe(wrapper);
   }
-
   // ===== ZOOM (CAMERA MOVE) =====
   let zoomTimer = null;
   let isHovering = false;
   let isZoomedIn = false;  // tracks current zoom state for toggle
-
   function applyZoom(screenEl, zoomed) {
     const camera = screenEl.querySelector('.camera');
     if (!camera) return;
@@ -2070,7 +2010,6 @@
     isZoomedIn = zoomed;
     updateZoomToggleLabel();
   }
-
   function updateZoomToggleLabel() {
     const label = document.getElementById('zoom-toggle-label');
     const iconEl = document.querySelector('#zoom-toggle svg, #zoom-toggle [data-lucide]');
@@ -2081,14 +2020,12 @@
       iconEl.innerHTML = LUCIDE_ICONS[name] || '';
     }
   }
-
   function toggleZoom() {
     clearTimeout(zoomTimer);  // cancel any pending auto-zoom
     const active = document.querySelector('.screen.is-active');
     if (!active) return;
     applyZoom(active, !isZoomedIn);
   }
-
   function scheduleZoom(screenEl) {
     clearTimeout(zoomTimer);
     applyZoom(screenEl, false);
@@ -2098,15 +2035,12 @@
       }
     }, 1200);
   }
-
   // Zoom stays put once it lands; no hover-pause
-
   // ===== PROGRESS BAR =====
   // Four stages: Notify -> Review -> Draft -> Sent. Both branches reach stage 3
   // on their draft screen, and the terminal "send" fills the final stage.
   const PROGRESS_MAP = { 'screen-1': 1, 'screen-2': 2, 'screen-3a': 3, 'screen-3b': 3, 'screen-4': 3 };
   let demoComplete = false;
-
   function setProgressHint(complete) {
     const hint = document.getElementById('demo-progress-hint');
     if (!hint) return;
@@ -2115,7 +2049,6 @@
       : 'Click to continue <i data-lucide="chevrons-right"></i>';
     refreshIcons();
   }
-
   function updateProgress(id) {
     const bar = document.getElementById('demo-progress');
     if (!bar) return;
@@ -2130,7 +2063,6 @@
     });
     setProgressHint(false);
   }
-
   function markProgressComplete() {
     const bar = document.getElementById('demo-progress');
     if (!bar) return;
@@ -2142,7 +2074,6 @@
     });
     setProgressHint(true);
   }
-
   // Clickable fallback so it's obvious the demo can be advanced.
   // Mirrors the primary action of the active screen.
   function advanceDemo() {
@@ -2170,7 +2101,6 @@
       return;
     }
   }
-
   // ===== INTRO: POST-CALL CONTEXT BEAT =====
   let introTimers = [];
   let introPlaying = false;
@@ -2210,7 +2140,6 @@
     clearIntroTimers();
     goTo('screen-1');
   }
-
   // ===== SCREEN NAVIGATION =====
   function goTo(id) {
     document.querySelectorAll('.screen').forEach(s => {
@@ -2226,7 +2155,6 @@
     refreshIcons();
     scheduleZoom(target);
   }
-
   function markSent(id, btn) {
     const sent = document.getElementById(id);
     if (!sent) return;
@@ -2250,7 +2178,6 @@
       }
     }, 100);
   }
-
   function openActionItems() {
     document.getElementById('action-modal').classList.add('is-open');
     refreshIcons();
@@ -2266,7 +2193,6 @@
   function closeSlackConfirm() {
     document.getElementById('slack-confirm').classList.remove('is-open');
   }
-
   function resetDemo() {
     document.querySelectorAll('.draft-sent').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.draft-action-btn.is-approve').forEach(btn => {
@@ -2288,7 +2214,6 @@
     if (track) track.scrollTo({ left: 0, behavior: 'smooth' });
     document.querySelectorAll('.mobile-sent-banner').forEach(el => el.style.display = 'none');
   }
-
   const progressBarEl = document.getElementById('demo-progress');
   if (progressBarEl) {
     progressBarEl.addEventListener('click', () => {
@@ -2296,7 +2221,6 @@
       else advanceDemo();
     });
   }
-
   const actionModalEl = document.getElementById('action-modal');
   if (actionModalEl) {
     actionModalEl.addEventListener('click', (e) => {
@@ -2315,7 +2239,6 @@
       closeSlackConfirm();
     }
   });
-
   // Kick off the intro context beat (or skip straight to Slack if reduced motion / mobile)
   const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const introScreenEl = document.getElementById('screen-0');
@@ -2329,7 +2252,6 @@
       runIntro();
     }
   }, 120);
-
   // ===== MOBILE TAP-THROUGH =====
   let mobileStep = 0;
   const TOTAL_STEPS = 8;
@@ -2371,6 +2293,5 @@
     });
   }
 </script>
-
 </body>
 </html>
